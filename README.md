@@ -12,34 +12,61 @@ This is quite rudimentary and was created for my own needs, but I'm happy to sha
 ## Screencast
 https://github.com/itsbrianburton/slide-confirm/assets/29252421/086edb77-23ae-4556-b6ee-6a4669253dd2
 
+## Configuration
+
+Each slider supports the following options:
+
+| Option | Type | Required | Description |
+|--------|------|----------|-------------|
+| `name` | string | Yes | Text displayed above the slider |
+| `icon` | string | No | MDI icon shown in front of the name (e.g. `mdi:door`) |
+| `textUnconfirmed` | string | Yes | Default text displayed inside the slider |
+| `textConfirmed` | string | Yes | Text displayed after a successful slide |
+| `iconUnconfirmed` | string | Yes | Icon displayed on the slider knob |
+| `iconConfirmed` | string | Yes | Icon displayed on the knob after a successful slide |
+| `confirm_action` | object | Yes | The action to perform on confirmation (see below) |
+
+### `confirm_action`
+
+| Option | Type | Required | Description |
+|--------|------|----------|-------------|
+| `action` | string | Yes | Must be `call-service` |
+| `service` | string | Yes | The service to call (e.g. `input_boolean.turn_on`) |
+| `target` | object | No | Target for the service call |
+| `target.entity_id` | string or list | No | Target entity or entities |
+| `target.device_id` | string or list | No | Target device or devices |
+| `target.area_id` | string or list | No | Target area or areas |
+| `data` | object | No | Additional data to pass to the service call |
+
+> **Note:** Only service calls are currently supported. At least one of `target` or `data` should be provided depending on the service being called.
+
 ## Usage
-After installation, edit your dashboard and click the "Add Card" button.  Choose the "Manual" box at the very bottom.  The card must be configured manually as shown here:
+
+After installation, edit your dashboard and click the "Add Card" button. Choose the "Manual" box at the very bottom. The card must be configured manually as shown here:
+
+### Basic example — target an entity
 
 ```yaml
-# REQUIRED: Specify the card
 type: custom:slide-confirm-card
-# REQUIRED: A list of sliders to display
 sliders:
-    # Text that appears above the slider
   - name: Front Door
-    # An icon to appear in front of the name
     icon: mdi:door
-    # Default text that appears in the slider
     textUnconfirmed: Slide to Unlock
-    # Text that appears when an action is confirmed
     textConfirmed: Door Unlocked!
-    # Default icon that appears in the slider knob
     iconUnconfirmed: mdi:lock
-    # Icon that appears in the slider knob when an action is confirmed
     iconConfirmed: mdi:lock-open
     confirm_action:
-      # Note that only service calls are currently supported!
       action: call-service
-      # Example service to call
       service: input_boolean.turn_on
       target:
-        # Target entity
         entity_id: input_boolean.slide_confirm
+```
+
+### Passing service data
+
+Use the `data` key to send additional parameters to services that require them:
+
+```yaml
   - name: Front door fingerprint reader
     icon: mdi:fingerprint
     textUnconfirmed: Slide to start enrolling
@@ -50,9 +77,13 @@ sliders:
       action: call-service
       service: esphome.fingerprint_enroll
       data:
-        # Service data
         finger_id: 1
         num_scans: 5
+```
+
+### Targeting a device
+
+```yaml
   - name: Back Door
     textUnconfirmed: Slide to Unlock
     textConfirmed: Door Unlocked!
@@ -62,8 +93,12 @@ sliders:
       action: call-service
       service: input_boolean.turn_on
       target:
-        # Target device
         device_id: device123
+```
+
+### Targeting an area
+
+```yaml
   - name: Garage Doors
     textUnconfirmed: Slide to Unlock
     textConfirmed: Doors Unlocked!
@@ -73,6 +108,5 @@ sliders:
       action: call-service
       service: input_boolean.turn_on
       target:
-        # Target area
         area_id: garage
 ```
