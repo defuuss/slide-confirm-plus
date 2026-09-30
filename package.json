@@ -1,8 +1,8 @@
 {
-	"name": "slide-confirm",
-	"version": "1.0.1",
-	"description": "Custom card for Home Assistant to prevent accidental button presses.",
-	"author": "Brian Burton",
+	"name": "slide-confirm-plus",
+	"version": "1.1.0",
+	"description": "A configurable, visual Home Assistant slide-to-confirm card.",
+	"author": "Slide Confirm Plus contributors",
 	"source": "src/index.ts",
 	"module": "dist/slide-confirm.js",
 	"targets": {

@@ -1208,6 +1208,7 @@ function $9cd908ed2625c047$export$d541bacb2bda4494(n) {
 
 class $a399cc6bbb0eb26a$export$da0658243c468832 extends (0, $ab210b2da7b39b9d$export$3f2f9f5909897157) {
     setConfig(config) {
+        if (!config.sliders?.length) throw new Error("At least one slider is required.");
         this._header = config.header === "" ? (0, $f58f44579a4747ac$export$45b790e32b2810ee) : config.header;
         this._sliders = config.sliders;
         if (this._hass) this.hass = this._hass;
@@ -1230,7 +1231,7 @@ class $a399cc6bbb0eb26a$export$da0658243c468832 extends (0, $ab210b2da7b39b9d$ex
     }
     render() {
         let content = (0, $f58f44579a4747ac$export$c0bb0b647f701bb5)`
-			${this._sliders.map((slider)=>(0, $f58f44579a4747ac$export$c0bb0b647f701bb5)`<slide-confirm @call-action=${this._callAction} config="${slider}" />`)}
+			${this._sliders.map((slider)=>(0, $f58f44579a4747ac$export$c0bb0b647f701bb5)`<slide-confirm @call-action=${this._callAction} .config=${slider} />`)}
 		`;
         return (0, $f58f44579a4747ac$export$c0bb0b647f701bb5)`
 			<ha-card header="${this._header}">
@@ -1243,8 +1244,31 @@ class $a399cc6bbb0eb26a$export$da0658243c468832 extends (0, $ab210b2da7b39b9d$ex
     }
     static getStubConfig() {
         return {
-            entity: "input_boolean.slide-confirm",
-            header: ""
+            header: "Confirm action",
+            sliders: [
+                {
+                    name: "Confirm action",
+                    icon: "mdi:gesture-swipe-right",
+                    textUnconfirmed: "Slide to confirm",
+                    textConfirmed: "Done!",
+                    iconUnconfirmed: "mdi:chevron-right",
+                    iconConfirmed: "mdi:check",
+                    confirm_action: {
+                        action: "call-service",
+                        service: ""
+                    },
+                    appearance: {
+                        background_color: "#1976d2",
+                        handle_color: "#ffffff",
+                        text_color: "#ffffff",
+                        confirmed_background_color: "#2e7d32",
+                        confirmed_handle_color: "#ffffff",
+                        height: 56,
+                        handle_size: 48,
+                        border_radius: 28
+                    }
+                }
+            ]
         };
     }
 }
@@ -1344,31 +1368,30 @@ class $a399cc6bbb0eb26a$export$da0658243c468832 extends (0, $ab210b2da7b39b9d$ex
 
 
 const $120c5a859c012378$export$1601f807332f51bf = (0, $def2de46b9306e8a$export$dbf350e5966cf602)`
-  .slide-confirm{
-    color: var(--text-color);
-    border-radius:30px;
-    padding:0;
-    font-size:.75em;
-    position:relative;
-    user-select:none;
-    -moz-user-select:none;
-    -webkit-user-select:none;
+  :host { display: block; }
+  .slide-confirm {
+    color: var(--slide-text-color, var(--text-primary-color));
+    height: var(--slide-height, 56px);
+    border-radius: var(--slide-radius, 28px);
+    padding: 0;
+    font-size: .75em;
+    position: relative;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
     margin: 8px 0;
   }
-  
+
   .slide-confirm-track {
     position: absolute;
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    background-color: var(--slider-track-color);
-    transition: background-color 500ms;
-    opacity: 0.38;
-    border-radius: 30px;
+    inset: 0;
+    background-color: var(--slide-track-color, var(--primary-color));
+    transition: background-color 250ms;
+    opacity: .92;
+    border-radius: var(--slide-radius, 28px);
   }
 
-  .slide-confirm-text{
+  .slide-confirm-text {
     display: inline-block;
     position: absolute;
     left: 0;
@@ -1377,73 +1400,52 @@ const $120c5a859c012378$export$1601f807332f51bf = (0, $def2de46b9306e8a$export$d
     text-align: center;
     transform: translateY(-50%);
     font-size: 1rem;
+    font-weight: 600;
+    color: var(--slide-text-color, var(--text-primary-color));
+    pointer-events: none;
   }
-  .slide-confirm-handle{
-    position:relative;
-    top:0;
-    left:0;
-    width:50px;
-    height:50px;
-    border-radius:25px;
-    border: 1px solid var(--switch-unchecked-button-color);
-    background-color: var(--switch-unchecked-button-color);
-    box-shadow: rgba(0, 0, 0, 0.2) 0px 3px 1px -2px, rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 1px 5px 0px;
-    box-sizing:border-box;
-    text-align:center;
-    font-size:20px;
+
+  .slide-confirm-handle {
+    position: relative;
+    top: 0;
+    left: 0;
+    width: var(--slide-handle-size, 48px);
+    height: var(--slide-handle-size, 48px);
+    margin: 2px;
+    border-radius: 50%;
+    border: 2px solid color-mix(in srgb, var(--slide-track-color, var(--primary-color)) 35%, #000);
+    background-color: var(--slide-handle-color, var(--card-background-color));
+    box-shadow: rgba(0, 0, 0, .24) 0 3px 8px;
+    box-sizing: border-box;
+    text-align: center;
+    font-size: 20px;
     line-height: 1;
-    font-family:serif;
-    color: var(--text-color);
+    color: var(--slide-track-color, var(--primary-color));
     user-select: none;
     touch-action: none;
-    transition: transform 300ms;
+    transition: transform 180ms;
     display: flex;
     align-items: center;
     justify-content: center;
   }
-  .slide-confirm-handle.dragging {
-    transition: none;
+  .slide-confirm-handle.dragging { transition: none; }
+  .slide-confirm-handle:hover { cursor: grab; }
+  .slide-confirm-handle:active { cursor: grabbing; }
+
+  .slide-confirm.confirmed .slide-confirm-track {
+    background-color: var(--slide-confirmed-track-color, var(--success-color));
+    opacity: .96;
   }
-  
-  .slide-confirm-handle:hover {
-    cursor:-webkit-grab;
-    cursor:grab
-  }
-  .slide-confirm-handle:active {
-    cursor:-webkit-grabbing;
-    cursor:grabbing
+  .slide-confirm.confirmed .slide-confirm-handle {
+    border-color: color-mix(in srgb, var(--slide-confirmed-track-color, var(--success-color)) 35%, #000);
+    background-color: var(--slide-confirmed-handle-color, var(--card-background-color));
+    color: var(--slide-confirmed-track-color, var(--success-color));
   }
 
-  .slide-confirm.confirmed {
-    color: var(--text-color);
-  }
-  
-  .slide-confirm.confirmed .slide-confirm-track {
-    background-color: var(--switch-checked-track-color);
-    opacity: 0.54;
-  }
-  
-  .slide-confirm.confirmed .slide-confirm-handle {
-    border: 1px solid var(--switch-checked-button-color);
-    background-color: var(--switch-checked-button-color);
-    color: var(--app-header-text-color);
-  }
-  
-  .slide-confirm .unconfirmed {
-    display: block;
-  }
-  
-  .slide-confirm .confirmed {
-    display: none;
-  }
-  
-  .slide-confirm.confirmed .unconfirmed {
-    display: none;
-  }
-  
-  .slide-confirm.confirmed .confirmed {
-    display: block;
-  }
+  .slide-confirm .unconfirmed { display: block; }
+  .slide-confirm .confirmed { display: none; }
+  .slide-confirm.confirmed .unconfirmed { display: none; }
+  .slide-confirm.confirmed .confirmed { display: block; }
 `;
 
 
@@ -1451,70 +1453,82 @@ class $3fffcf1c09fcf223$export$eb0022d780a83cd2 extends (0, $ab210b2da7b39b9d$ex
     static{
         this.styles = (0, $120c5a859c012378$export$1601f807332f51bf);
     }
+    _safeColor(value, fallback) {
+        return typeof value === 'string' && /^#[0-9a-f]{3,8}$/i.test(value) ? value : fallback;
+    }
+    _safeNumber(value, fallback, minimum, maximum) {
+        const number = typeof value === 'number' ? value : Number(value);
+        return Number.isFinite(number) ? Math.max(minimum, Math.min(maximum, number)) : fallback;
+    }
+    _appearanceStyle() {
+        const appearance = this.config.appearance || {};
+        const height = this._safeNumber(appearance.height, 56, 40, 120);
+        const handleSize = Math.min(this._safeNumber(appearance.handle_size, 48, 32, 100), height - 4);
+        const radius = this._safeNumber(appearance.border_radius, Math.round(height / 2), 0, 60);
+        return [
+            `--slide-track-color: ${this._safeColor(appearance.background_color, '#1976d2')}`,
+            `--slide-handle-color: ${this._safeColor(appearance.handle_color, '#ffffff')}`,
+            `--slide-text-color: ${this._safeColor(appearance.text_color, '#ffffff')}`,
+            `--slide-confirmed-track-color: ${this._safeColor(appearance.confirmed_background_color, '#2e7d32')}`,
+            `--slide-confirmed-handle-color: ${this._safeColor(appearance.confirmed_handle_color, '#ffffff')}`,
+            `--slide-height: ${height}px`,
+            `--slide-handle-size: ${handleSize}px`,
+            `--slide-radius: ${radius}px`
+        ].join(';');
+    }
     dragStart(e) {
-        if (this._confirmed) return;
-        this._handle.classList.add("dragging");
+        if (this._confirmed || e.button !== 0) return;
+        this._handle.classList.add('dragging');
         this._handle.onpointermove = this.drag.bind(this);
         this._handle.setPointerCapture(e.pointerId);
     }
     dragEnd(e) {
-        let x = this._calculateX(e);
-        if (x + e.target.clientWidth === this._container.clientWidth && !this._confirmed) {
+        const x = this._calculateX(e);
+        if (x >= this._container.clientWidth - this._handle.clientWidth - 2 && !this._confirmed) {
             this._confirmed = true;
-            this._container.classList.add("confirmed");
-            if (this.config.confirm_action) {
-                const payload = {
-                    detail: this.config.confirm_action,
-                    bubbles: true,
-                    composed: true
-                };
-                this.dispatchEvent(new CustomEvent("call-action", payload));
-            }
+            this._container.classList.add('confirmed');
+            if (this.config.confirm_action) this.dispatchEvent(new CustomEvent('call-action', {
+                detail: this.config.confirm_action,
+                bubbles: true,
+                composed: true
+            }));
             setTimeout(()=>{
-                this._container.classList.remove("confirmed");
+                this._container.classList.remove('confirmed');
                 this._confirmed = false;
-            }, 1500);
+            }, this._safeNumber(this.config.confirmation_duration, 1500, 500, 10000));
         }
-        this._handle.classList.remove("dragging");
+        this._handle.classList.remove('dragging');
         this._handle.onpointermove = null;
-        this._handle.releasePointerCapture(e.pointerId);
-        this._handle.style.transform = `translateX(0)`;
+        if (this._handle.hasPointerCapture(e.pointerId)) this._handle.releasePointerCapture(e.pointerId);
+        this._handle.style.transform = 'translateX(0)';
     }
     _calculateX(e) {
-        let bounds = this._container.getBoundingClientRect();
-        let x = e.clientX - bounds.x - e.target.clientWidth / 2;
-        // Keep the handle within the container
+        const bounds = this._container.getBoundingClientRect();
+        let x = e.clientX - bounds.x - this._handle.clientWidth / 2;
         if (x < 0) x = 0;
-        else if (x + e.target.clientWidth >= this._container.clientWidth) x = this._container.clientWidth - e.target.clientWidth;
+        else if (x + this._handle.clientWidth >= this._container.clientWidth) x = this._container.clientWidth - this._handle.clientWidth;
         return x;
     }
     drag(e) {
         this._handle.style.transform = `translateX(${this._calculateX(e)}px)`;
     }
     render() {
-        let content;
-        content = (0, $f58f44579a4747ac$export$c0bb0b647f701bb5)`
-			${this.config.icon ? (0, $f58f44579a4747ac$export$c0bb0b647f701bb5)`<ha-icon icon="${this.config.icon}" />` : ''}
+        const content = (0, $f58f44579a4747ac$export$c0bb0b647f701bb5)`
+			${this.config.icon ? (0, $f58f44579a4747ac$export$c0bb0b647f701bb5)`<ha-icon icon=${this.config.icon} />` : ''}
 			${this.config.name ? (0, $f58f44579a4747ac$export$c0bb0b647f701bb5)`<span class="slide-name">${this.config.name}</span>` : ''}
 			${this.config.label ? (0, $f58f44579a4747ac$export$c0bb0b647f701bb5)`<span class="slide-label">${this.config.label}</span>` : ''}
-			<div class="slide-confirm">
+			<div class="slide-confirm" style=${this._appearanceStyle()}>
 				<div class="slide-confirm-track"></div>
 				<div class="slide-confirm-text unconfirmed">${this.config.textUnconfirmed}</div>
 				<div class="slide-confirm-text confirmed">${this.config.textConfirmed}</div>
-				<div class="slide-confirm-handle"
-				     @touchstart="${(e)=>this.dragStart(e)}"
-				     @touchend="${(e)=>this.dragEnd(e)}"
-				     @pointerdown="${(e)=>this.dragStart(e)}"
-				     @pointerup="${(e)=>this.dragEnd(e)}" >
-					<div class="slide-confirm-icon unconfirmed">
-						<ha-icon icon="${this.config.iconUnconfirmed}" />
-					</div>
-					<div class="slide-confirm-icon confirmed">
-						<ha-icon icon="${this.config.iconConfirmed}" />
-					</div>
+				<div class="slide-confirm-handle" role="slider" aria-label=${this.config.name || 'Confirm action'}
+					@pointerdown=${(e)=>this.dragStart(e)}
+					@pointerup=${(e)=>this.dragEnd(e)}
+					@pointercancel=${(e)=>this.dragEnd(e)}>
+					<div class="slide-confirm-icon unconfirmed"><ha-icon icon=${this.config.iconUnconfirmed || 'mdi:chevron-right'} /></div>
+					<div class="slide-confirm-icon confirmed"><ha-icon icon=${this.config.iconConfirmed || 'mdi:check'} /></div>
 				</div>
-			</div>
-		`;
+			</div>`;
         return content;
     }
     constructor(...args){
@@ -1523,27 +1537,269 @@ class $3fffcf1c09fcf223$export$eb0022d780a83cd2 extends (0, $ab210b2da7b39b9d$ex
 }
 (0, $24c52f343453d62d$export$29e00dfd3077644b)([
     (0, $9cd908ed2625c047$export$d541bacb2bda4494)({
-        attribute: true
+        attribute: false
     })
 ], $3fffcf1c09fcf223$export$eb0022d780a83cd2.prototype, "config", void 0);
 (0, $24c52f343453d62d$export$29e00dfd3077644b)([
     (0, $04c21ea1ce1f6057$export$ca000e230c0caa3e)()
 ], $3fffcf1c09fcf223$export$eb0022d780a83cd2.prototype, "_confirmed", void 0);
 (0, $24c52f343453d62d$export$29e00dfd3077644b)([
-    (0, $02a1f3a787c54a30$export$2fa187e846a241c4)(".slide-confirm")
+    (0, $02a1f3a787c54a30$export$2fa187e846a241c4)('.slide-confirm')
 ], $3fffcf1c09fcf223$export$eb0022d780a83cd2.prototype, "_container", void 0);
 (0, $24c52f343453d62d$export$29e00dfd3077644b)([
-    (0, $02a1f3a787c54a30$export$2fa187e846a241c4)(".slide-confirm-handle")
+    (0, $02a1f3a787c54a30$export$2fa187e846a241c4)('.slide-confirm-handle')
 ], $3fffcf1c09fcf223$export$eb0022d780a83cd2.prototype, "_handle", void 0);
+
+
+
+
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ * SPDX-License-Identifier: BSD-3-Clause
+ */ const $14742f68afc766d6$export$da64fc29f17f9d0e = (e)=>(n)=>"function" == typeof n ? ((e, n)=>(customElements.define(e, n), n))(e, n) : ((e, n)=>{
+            const { kind: t, elements: s } = n;
+            return {
+                kind: t,
+                elements: s,
+                finisher (n) {
+                    customElements.define(e, n);
+                }
+            };
+        })(e, n);
+
+
+
+
+
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ * SPDX-License-Identifier: BSD-3-Clause
+ */ function $b4269277b3c48b0c$export$b2b799818fbabcf3(e) {
+    return (0, $25e9c5a8f7ecfc69$export$757d561a932dc1cb)({
+        finisher: (r, t)=>{
+            Object.assign(r.prototype[t], e);
+        }
+    });
+}
+
+
+
+
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ * SPDX-License-Identifier: BSD-3-Clause
+ */ function $ed34c589b230c255$export$dcd0d083aa86c355(e) {
+    return (0, $25e9c5a8f7ecfc69$export$757d561a932dc1cb)({
+        descriptor: (r)=>({
+                get () {
+                    var r, o;
+                    return null !== (o = null === (r = this.renderRoot) || void 0 === r ? void 0 : r.querySelectorAll(e)) && void 0 !== o ? o : [];
+                },
+                enumerable: !0,
+                configurable: !0
+            })
+    });
+}
+
+
+
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ * SPDX-License-Identifier: BSD-3-Clause
+ */ function $ea50f1870b80cbec$export$163dfc35cc43f240(e) {
+    return (0, $25e9c5a8f7ecfc69$export$757d561a932dc1cb)({
+        descriptor: (r)=>({
+                async get () {
+                    var r;
+                    return await this.updateComplete, null === (r = this.renderRoot) || void 0 === r ? void 0 : r.querySelector(e);
+                },
+                enumerable: !0,
+                configurable: !0
+            })
+    });
+}
+
+
+
+/**
+ * @license
+ * Copyright 2021 Google LLC
+ * SPDX-License-Identifier: BSD-3-Clause
+ */ var $563fcf7ce7e6c5aa$var$n;
+const $563fcf7ce7e6c5aa$var$e = null != (null === ($563fcf7ce7e6c5aa$var$n = window.HTMLSlotElement) || void 0 === $563fcf7ce7e6c5aa$var$n ? void 0 : $563fcf7ce7e6c5aa$var$n.prototype.assignedElements) ? (o, n)=>o.assignedElements(n) : (o, n)=>o.assignedNodes(n).filter((o)=>o.nodeType === Node.ELEMENT_NODE);
+function $563fcf7ce7e6c5aa$export$4682af2d9ee91415(n) {
+    const { slot: l, selector: t } = null != n ? n : {};
+    return (0, $25e9c5a8f7ecfc69$export$757d561a932dc1cb)({
+        descriptor: (o)=>({
+                get () {
+                    var o;
+                    const r = "slot" + (l ? `[name=${l}]` : ":not([name])"), i = null === (o = this.renderRoot) || void 0 === o ? void 0 : o.querySelector(r), s = null != i ? $563fcf7ce7e6c5aa$var$e(i, n) : [];
+                    return t ? s.filter((o)=>o.matches(t)) : s;
+                },
+                enumerable: !0,
+                configurable: !0
+            })
+    });
+}
+
+
+
+
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ * SPDX-License-Identifier: BSD-3-Clause
+ */ function $728f1385dd7bf557$export$1bdbe53f9df1b8(o, n, r) {
+    let l, s = o;
+    return "object" == typeof o ? (s = o.slot, l = o) : l = {
+        flatten: n
+    }, r ? (0, $563fcf7ce7e6c5aa$export$4682af2d9ee91415)({
+        slot: s,
+        flatten: n,
+        selector: r
+    }) : (0, $25e9c5a8f7ecfc69$export$757d561a932dc1cb)({
+        descriptor: (e)=>({
+                get () {
+                    var e, t;
+                    const o = "slot" + (s ? `[name=${s}]` : ":not([name])"), n = null === (e = this.renderRoot) || void 0 === e ? void 0 : e.querySelector(o);
+                    return null !== (t = null == n ? void 0 : n.assignedNodes(l)) && void 0 !== t ? t : [];
+                },
+                enumerable: !0,
+                configurable: !0
+            })
+    });
+}
+
+
+
+
+class $d067581fc0d59830$export$70b4c5ffd4aff272 extends (0, $ab210b2da7b39b9d$export$3f2f9f5909897157) {
+    static{
+        this.styles = (0, $def2de46b9306e8a$export$dbf350e5966cf602)`
+    :host { display: block; }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .full { grid-column: 1 / -1; }
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    label { color: var(--secondary-text-color); font-size: 0.85rem; }
+    input, ha-textfield { box-sizing: border-box; width: 100%; }
+    input[type="color"] { height: 42px; padding: 2px; border: 1px solid var(--divider-color); border-radius: 8px; background: var(--card-background-color); }
+    h3 { margin: 20px 0 10px; font-size: 1rem; }
+    .hint { color: var(--secondary-text-color); font-size: 0.85rem; margin: 0 0 12px; }
+  `;
+    }
+    setConfig(config) {
+        this._config = structuredClone(config || {});
+        this._config.sliders = this._config.sliders?.length ? this._config.sliders : [
+            this._defaultSlider()
+        ];
+    }
+    _defaultSlider() {
+        return {
+            name: 'Confirm action',
+            icon: 'mdi:gesture-swipe-right',
+            textUnconfirmed: 'Slide to confirm',
+            textConfirmed: 'Done!',
+            iconUnconfirmed: 'mdi:chevron-right',
+            iconConfirmed: 'mdi:check',
+            confirm_action: {
+                action: 'call-service',
+                service: '',
+                target: {
+                    entity_id: ''
+                }
+            },
+            appearance: {
+                background_color: '#1976d2',
+                handle_color: '#ffffff',
+                text_color: '#ffffff',
+                confirmed_background_color: '#2e7d32',
+                confirmed_handle_color: '#ffffff',
+                height: 56,
+                handle_size: 48,
+                border_radius: 28
+            }
+        };
+    }
+    _value(path, fallback = '') {
+        return path.split('.').reduce((value, key)=>value?.[key], this._config) ?? fallback;
+    }
+    _update(path, value) {
+        const next = structuredClone(this._config);
+        let target = next;
+        const parts = path.split('.');
+        for (const part of parts.slice(0, -1))target = target[part] ||= {};
+        target[parts[parts.length - 1]] = value;
+        this._config = next;
+        this.dispatchEvent(new CustomEvent('config-changed', {
+            detail: {
+                config: next
+            },
+            bubbles: true,
+            composed: true
+        }));
+    }
+    _text(path, label, type = 'text') {
+        return (0, $f58f44579a4747ac$export$c0bb0b647f701bb5)`<div class="field"><label>${label}</label><input type=${type} .value=${String(this._value(path))} @input=${(e)=>this._update(path, e.target.value)}></div>`;
+    }
+    _number(path, label, min, max) {
+        return (0, $f58f44579a4747ac$export$c0bb0b647f701bb5)`<div class="field"><label>${label}</label><input type="number" min=${min} max=${max} .value=${String(this._value(path))} @input=${(e)=>this._update(path, Number(e.target.value))}></div>`;
+    }
+    _color(path, label, fallback) {
+        return (0, $f58f44579a4747ac$export$c0bb0b647f701bb5)`<div class="field"><label>${label}</label><input type="color" .value=${String(this._value(path, fallback))} @input=${(e)=>this._update(path, e.target.value)}></div>`;
+    }
+    render() {
+        return (0, $f58f44579a4747ac$export$c0bb0b647f701bb5)`
+      <p class="hint">Use the controls below to configure the first slider. The dashboard editor updates its live card preview as you change values.</p>
+      <div class="grid">
+        ${this._text('header', 'Card title')}
+        ${this._text('sliders.0.name', 'Slider title')}
+        ${this._text('sliders.0.icon', 'Title icon (MDI)')}
+        ${this._text('sliders.0.confirm_action.service', 'Service (for example switch.toggle)')}
+        <div class="full">${this._text('sliders.0.confirm_action.target.entity_id', 'Target entity')}</div>
+        <div class="full">${this._text('sliders.0.textUnconfirmed', 'Instruction text')}</div>
+        <div class="full">${this._text('sliders.0.textConfirmed', 'Success text')}</div>
+        ${this._text('sliders.0.iconUnconfirmed', 'Handle icon (before)')}
+        ${this._text('sliders.0.iconConfirmed', 'Handle icon (after)')}
+      </div>
+      <h3>Appearance</h3>
+      <div class="grid">
+        ${this._color('sliders.0.appearance.background_color', 'Background color', '#1976d2')}
+        ${this._color('sliders.0.appearance.handle_color', 'Handle color', '#ffffff')}
+        ${this._color('sliders.0.appearance.text_color', 'Text color', '#ffffff')}
+        ${this._color('sliders.0.appearance.confirmed_background_color', 'Success background', '#2e7d32')}
+        ${this._color('sliders.0.appearance.confirmed_handle_color', 'Success handle', '#ffffff')}
+        ${this._number('sliders.0.appearance.height', 'Height (px)', 40, 120)}
+        ${this._number('sliders.0.appearance.handle_size', 'Handle size (px)', 32, 100)}
+        ${this._number('sliders.0.appearance.border_radius', 'Corner radius (px)', 0, 60)}
+      </div>
+    `;
+    }
+    constructor(...args){
+        super(...args), this._config = {};
+    }
+}
+(0, $24c52f343453d62d$export$29e00dfd3077644b)([
+    (0, $9cd908ed2625c047$export$d541bacb2bda4494)({
+        attribute: false
+    })
+], $d067581fc0d59830$export$70b4c5ffd4aff272.prototype, "hass", void 0);
+(0, $24c52f343453d62d$export$29e00dfd3077644b)([
+    (0, $04c21ea1ce1f6057$export$ca000e230c0caa3e)()
+], $d067581fc0d59830$export$70b4c5ffd4aff272.prototype, "_config", void 0);
 
 
 customElements.define("slide-confirm-card", (0, $a399cc6bbb0eb26a$export$da0658243c468832));
 customElements.define("slide-confirm", (0, $3fffcf1c09fcf223$export$eb0022d780a83cd2));
+customElements.define("slide-confirm-editor", (0, $d067581fc0d59830$export$70b4c5ffd4aff272));
 window.customCards = window.customCards || [];
 window.customCards.push({
     type: "slide-confirm-card",
-    name: "Slide to Confirm Card",
-    description: "Prevent accidental button presses by requiring slide to confirm."
+    name: "Slide Confirm Plus",
+    description: "A configurable slide-to-confirm card with a visual editor and color pickers."
 });
 
 

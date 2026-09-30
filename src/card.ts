@@ -6,8 +6,8 @@ import { HomeAssistant, LovelaceCardConfig } from 'custom-card-helpers';
 import { SlideConfirmButtonConfig } from './slide-confirm';
 
 interface Config extends LovelaceCardConfig {
-	header: string;
-	entity: string;
+	header?: string;
+	sliders?: Array<SlideConfirmButtonConfig>;
 }
 
 export class SlideConfirmCard extends LitElement {
@@ -18,6 +18,9 @@ export class SlideConfirmCard extends LitElement {
 	private _hass;
 
 	setConfig(config: Config) {
+		if (!config.sliders?.length) {
+			throw new Error("At least one slider is required.");
+		}
 		this._header = config.header === "" ? nothing : config.header;
 		this._sliders = config.sliders;
 
@@ -59,7 +62,7 @@ export class SlideConfirmCard extends LitElement {
 	render() {
 		let content: TemplateResult = html`
 			${this._sliders.map((slider) =>
-				html`<slide-confirm @call-action=${this._callAction} config="${slider}" />`
+				html`<slide-confirm @call-action=${this._callAction} .config=${slider} />`
 			)}
 		`;
 
@@ -76,8 +79,21 @@ export class SlideConfirmCard extends LitElement {
 
 	static getStubConfig() {
 		return {
-			entity: "input_boolean.slide-confirm",
-			header: ""
+			header: "Confirm action",
+			sliders: [{
+				name: "Confirm action",
+				icon: "mdi:gesture-swipe-right",
+				textUnconfirmed: "Slide to confirm",
+				textConfirmed: "Done!",
+				iconUnconfirmed: "mdi:chevron-right",
+				iconConfirmed: "mdi:check",
+				confirm_action: { action: "call-service", service: "" },
+				appearance: {
+					background_color: "#1976d2", handle_color: "#ffffff", text_color: "#ffffff",
+					confirmed_background_color: "#2e7d32", confirmed_handle_color: "#ffffff",
+					height: 56, handle_size: 48, border_radius: 28
+				}
+			}]
 		}
 	}
 }

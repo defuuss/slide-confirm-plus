@@ -1,112 +1,124 @@
-# Slide to Confirm
+# Slide Confirm Plus
 
-This is a custom card for [Home Assistant](https://www.home-assistant.io) designed to prevent accidental button presses by requiring the user perform a successful sliding action from left to right to trigger a service.
+A Home Assistant custom card for actions that should not happen from one accidental tap. Drag the high-contrast handle all the way across to call a service.
 
-Use case: You have a button that can remotely unlock your front door, but you most likely don't have an automated method to close the door if it was opened accidentally.  Slide to Confirm requires that you slide the indicator across the card to perform an action.
+Slide Confirm Plus adds a visual dashboard editor and practical appearance controls to the original Slide to Confirm card: color pickers for the track, handle, text, and success state; plus height, handle size, and corner-radius inputs. Changes are reflected in Home Assistant's live card preview while editing.
 
-This is quite rudimentary and was created for my own needs, but I'm happy to share it with the community and incorporate any improvements you want to add through pull requests.
+![Slide Confirm Plus preview](img/slide-confirm-plus-preview.svg)
 
-## Screenshot
-![Screenshot](https://github.com/itsbrianburton/slide-confirm/raw/main/img/screenshot.png)
+## Why this fork
 
-## Screencast
-https://github.com/itsbrianburton/slide-confirm/assets/29252421/086edb77-23ae-4556-b6ee-6a4669253dd2
+The original card is intentionally simple and dependable. This fork keeps the same slide-to-confirm interaction while making it easier to match a dashboard without CSS or card-mod. The default handle is larger, white, outlined, and set against a strong blue track so it is easy to see at a glance.
 
-## Configuration
+## Install
 
-Each slider supports the following options:
+### HACS
 
-| Option | Type | Required | Description |
-|--------|------|----------|-------------|
-| `name` | string | Yes | Text displayed above the slider |
-| `icon` | string | No | MDI icon shown in front of the name (e.g. `mdi:door`) |
-| `textUnconfirmed` | string | Yes | Default text displayed inside the slider |
-| `textConfirmed` | string | Yes | Text displayed after a successful slide |
-| `iconUnconfirmed` | string | Yes | Icon displayed on the slider knob |
-| `iconConfirmed` | string | Yes | Icon displayed on the knob after a successful slide |
-| `confirm_action` | object | Yes | The action to perform on confirmation (see below) |
+1. In HACS, open **Frontend** and select **Custom repositories**.
+2. Add this repository with category **Dashboard**.
+3. Install **Slide Confirm Plus** and reload Home Assistant.
+4. Add the card to a dashboard. The visual editor is available when you choose the card in the dashboard UI.
 
-### `confirm_action`
+### Manual
 
-| Option | Type | Required | Description |
-|--------|------|----------|-------------|
-| `action` | string | Yes | Must be `call-service` |
-| `service` | string | Yes | The service to call (e.g. `input_boolean.turn_on`) |
-| `target` | object | No | Target for the service call |
-| `target.entity_id` | string or list | No | Target entity or entities |
-| `target.device_id` | string or list | No | Target device or devices |
-| `target.area_id` | string or list | No | Target area or areas |
-| `data` | object | No | Additional data to pass to the service call |
+Copy `dist/slide-confirm.js` to `/config/www/slide-confirm-plus.js`, then add it as a Lovelace JavaScript module resource:
 
-> **Note:** Only service calls are currently supported. At least one of `target` or `data` should be provided depending on the service being called.
+```yaml
+url: /local/slide-confirm-plus.js
+type: module
+```
 
-## Usage
+## Visual editor
 
-After installation, edit your dashboard and click the "Add Card" button. Choose the "Manual" box at the very bottom. The card must be configured manually as shown here:
+The editor supports one primary slider and offers normal inputs instead of a CSS configuration surface:
 
-### Basic example — target an entity
+- card and slider title
+- service and target entity
+- instruction and completion text
+- icon names
+- background, handle, text, success-background, and success-handle color pickers
+- slider height, handle size, and corner radius
+
+For multiple sliders, use the dashboard's YAML editor. The editor preserves additional sliders while editing the first one.
+
+## Example
 
 ```yaml
 type: custom:slide-confirm-card
+header: Front entrance
 sliders:
-  - name: Front Door
+  - name: Open Door
     icon: mdi:door
-    textUnconfirmed: Slide to Unlock
-    textConfirmed: Door Unlocked!
-    iconUnconfirmed: mdi:lock
-    iconConfirmed: mdi:lock-open
+    textUnconfirmed: Slide to open
+    textConfirmed: Door command sent
+    iconUnconfirmed: mdi:door-closed
+    iconConfirmed: mdi:door-open
+    confirmation_duration: 1800
+    appearance:
+      background_color: '#0d47a1'
+      handle_color: '#ffffff'
+      text_color: '#ffffff'
+      confirmed_background_color: '#2e7d32'
+      confirmed_handle_color: '#ffffff'
+      height: 64
+      handle_size: 54
+      border_radius: 32
     confirm_action:
       action: call-service
-      service: input_boolean.turn_on
+      service: switch.toggle
       target:
-        entity_id: input_boolean.slide_confirm
+        entity_id: switch.entree_haustur_299
 ```
 
-### Passing service data
+## Configuration
 
-Use the `data` key to send additional parameters to services that require them:
+Each slider retains the original action fields:
 
-```yaml
-  - name: Front door fingerprint reader
-    icon: mdi:fingerprint
-    textUnconfirmed: Slide to start enrolling
-    textConfirmed: Enroll started!
-    iconUnconfirmed: mdi:lock
-    iconConfirmed: mdi:lock-open
-    confirm_action:
-      action: call-service
-      service: esphome.fingerprint_enroll
-      data:
-        finger_id: 1
-        num_scans: 5
+| Field | Required | Description |
+| --- | --- | --- |
+| `name` | no | Text above the slider. |
+| `icon` | no | MDI icon beside the title. |
+| `textUnconfirmed` | no | Text shown before confirming. |
+| `textConfirmed` | no | Text shown after confirming. |
+| `iconUnconfirmed` | no | MDI icon inside the handle before confirming. |
+| `iconConfirmed` | no | MDI icon inside the handle after confirming. |
+| `confirmation_duration` | no | Success display time in milliseconds; 500–10,000, default 1,500. |
+| `confirm_action` | yes | A Home Assistant `call-service` action. |
+| `appearance` | no | Appearance options below. |
+
+### `appearance`
+
+All color values are hex colors. The visual editor writes these values for you.
+
+| Field | Default | Description |
+| --- | --- | --- |
+| `background_color` | `#1976d2` | Normal slider-track color. |
+| `handle_color` | `#ffffff` | Normal handle color. |
+| `text_color` | `#ffffff` | Instruction and completion text color. |
+| `confirmed_background_color` | `#2e7d32` | Track color after a successful slide. |
+| `confirmed_handle_color` | `#ffffff` | Handle color after a successful slide. |
+| `height` | `56` | Slider height in pixels; 40–120. |
+| `handle_size` | `48` | Handle diameter in pixels; 32–100. It is kept inside the slider height. |
+| `border_radius` | half the height | Corner radius in pixels; 0–60. |
+
+## Safety and behavior
+
+- A service is called only after the handle reaches the end of the track.
+- Pointer events are used for mouse and touch, avoiding duplicate touch/pointer handling.
+- The confirmation threshold has a small tolerance, so a successful full slide is reliable.
+- This card does not determine whether an action is safe. For locks, doors, or other physical controls, enforce authorization and safety checks in Home Assistant too.
+
+## Credits and license
+
+Slide Confirm Plus is a derivative of [Slide to Confirm](https://github.com/itsbrianburton/slide-confirm) by Brian Burton. The original project supplied the card concept, structure, and slide-confirm interaction. This repository adds the visual editor, appearance model, accessibility labels, stronger default contrast, and input handling improvements.
+
+The upstream project is licensed under the MIT License. Its copyright notice is retained in [LICENSE](LICENSE), as required by that license.
+
+## Development
+
+```bash
+npm install
+HOME=/root npm run build
 ```
 
-### Targeting a device
-
-```yaml
-  - name: Back Door
-    textUnconfirmed: Slide to Unlock
-    textConfirmed: Door Unlocked!
-    iconUnconfirmed: mdi:lock
-    iconConfirmed: mdi:lock-open
-    confirm_action:
-      action: call-service
-      service: input_boolean.turn_on
-      target:
-        device_id: device123
-```
-
-### Targeting an area
-
-```yaml
-  - name: Garage Doors
-    textUnconfirmed: Slide to Unlock
-    textConfirmed: Doors Unlocked!
-    iconUnconfirmed: mdi:lock
-    iconConfirmed: mdi:lock-open
-    confirm_action:
-      action: call-service
-      service: input_boolean.turn_on
-      target:
-        area_id: garage
-```
+`HOME=/root` is only needed in restricted container environments where SWC cannot use the shared home cache. Normal local environments can use `npm run build`.
