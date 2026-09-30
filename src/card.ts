@@ -89,7 +89,7 @@ export class SlideConfirmCard extends LitElement {
 				iconConfirmed: "mdi:check",
 				confirm_action: { action: "call-service", service: "" },
 				appearance: {
-					background_color: "#1976d2", handle_color: "#ffffff", text_color: "#ffffff",
+					background_color: "#1976d2", handle_color: "#ffffff", handle_style: "3d", text_color: "#ffffff",
 					confirmed_background_color: "#2e7d32", confirmed_handle_color: "#ffffff",
 					height: 56, handle_size: 48, border_radius: 28
 				}

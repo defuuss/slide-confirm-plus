@@ -37,6 +37,7 @@ The editor supports one primary slider and offers normal inputs instead of a CSS
 - instruction and completion text
 - icon names
 - background, handle, text, success-background, and success-handle color pickers
+- a simple selector for a glossy 3D ball or flat round handle
 - slider height, handle size, and corner radius
 
 For multiple sliders, use the dashboard's YAML editor. The editor preserves additional sliders while editing the first one.
@@ -57,6 +58,7 @@ sliders:
     appearance:
       background_color: '#0d47a1'
       handle_color: '#ffffff'
+      handle_style: 3d
       text_color: '#ffffff'
       confirmed_background_color: '#2e7d32'
       confirmed_handle_color: '#ffffff'
@@ -94,6 +96,7 @@ All color values are hex colors. The visual editor writes these values for you.
 | --- | --- | --- |
 | `background_color` | `#1976d2` | Normal slider-track color. |
 | `handle_color` | `#ffffff` | Normal handle color. |
+| `handle_style` | `3d` | `3d` gives the round handle a glossy ball finish; `flat` uses a flat circle. |
 | `text_color` | `#ffffff` | Instruction and completion text color. |
 | `confirmed_background_color` | `#2e7d32` | Track color after a successful slide. |
 | `confirmed_handle_color` | `#ffffff` | Handle color after a successful slide. |

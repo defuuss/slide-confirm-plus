@@ -28,7 +28,7 @@ export class SlideConfirmEditor extends LitElement {
       textUnconfirmed: 'Slide to confirm', textConfirmed: 'Done!',
       iconUnconfirmed: 'mdi:chevron-right', iconConfirmed: 'mdi:check',
       confirm_action: { action: 'call-service', service: '', target: { entity_id: '' } },
-      appearance: { background_color: '#1976d2', handle_color: '#ffffff', text_color: '#ffffff', confirmed_background_color: '#2e7d32', confirmed_handle_color: '#ffffff', height: 56, handle_size: 48, border_radius: 28 }
+      appearance: { background_color: '#1976d2', handle_color: '#ffffff', handle_style: '3d', text_color: '#ffffff', confirmed_background_color: '#2e7d32', confirmed_handle_color: '#ffffff', height: 56, handle_size: 48, border_radius: 28 }
     };
   }
 
@@ -58,6 +58,10 @@ export class SlideConfirmEditor extends LitElement {
     return html`<div class="field"><label>${label}</label><input type="color" .value=${String(this._value(path, fallback))} @input=${(e: Event) => this._update(path, (e.target as HTMLInputElement).value)}></div>`;
   }
 
+  private _select(path: string, label: string, options: Array<[string, string]>) {
+    return html`<div class="field"><label>${label}</label><select .value=${String(this._value(path, options[0][0]))} @change=${(e: Event) => this._update(path, (e.target as HTMLSelectElement).value)}>${options.map(([value, title]) => html`<option value=${value}>${title}</option>`)}</select></div>`;
+  }
+
   render() {
     return html`
       <p class="hint">Use the controls below to configure the first slider. The dashboard editor updates its live card preview as you change values.</p>
@@ -76,6 +80,7 @@ export class SlideConfirmEditor extends LitElement {
       <div class="grid">
         ${this._color('sliders.0.appearance.background_color', 'Background color', '#1976d2')}
         ${this._color('sliders.0.appearance.handle_color', 'Handle color', '#ffffff')}
+        ${this._select('sliders.0.appearance.handle_style', 'Round handle style', [['3d', '3D ball'], ['flat', 'Flat circle']])}
         ${this._color('sliders.0.appearance.text_color', 'Text color', '#ffffff')}
         ${this._color('sliders.0.appearance.confirmed_background_color', 'Success background', '#2e7d32')}
         ${this._color('sliders.0.appearance.confirmed_handle_color', 'Success handle', '#ffffff')}

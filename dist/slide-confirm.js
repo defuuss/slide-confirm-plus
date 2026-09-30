@@ -1260,6 +1260,7 @@ class $a399cc6bbb0eb26a$export$da0658243c468832 extends (0, $ab210b2da7b39b9d$ex
                     appearance: {
                         background_color: "#1976d2",
                         handle_color: "#ffffff",
+                        handle_style: "3d",
                         text_color: "#ffffff",
                         confirmed_background_color: "#2e7d32",
                         confirmed_handle_color: "#ffffff",
@@ -1414,8 +1415,8 @@ const $120c5a859c012378$export$1601f807332f51bf = (0, $def2de46b9306e8a$export$d
     margin: 2px;
     border-radius: 50%;
     border: 2px solid color-mix(in srgb, var(--slide-track-color, var(--primary-color)) 35%, #000);
-    background-color: var(--slide-handle-color, var(--card-background-color));
-    box-shadow: rgba(0, 0, 0, .24) 0 3px 8px;
+    background: radial-gradient(circle at 32% 27%, color-mix(in srgb, var(--slide-handle-color, #ffffff) 42%, #ffffff), var(--slide-handle-color, #ffffff) 58%, color-mix(in srgb, var(--slide-handle-color, #ffffff) 76%, #000000));
+    box-shadow: rgba(0, 0, 0, .28) 0 5px 10px, inset rgba(255, 255, 255, .48) 0 1px 1px;
     box-sizing: border-box;
     text-align: center;
     font-size: 20px;
@@ -1431,6 +1432,10 @@ const $120c5a859c012378$export$1601f807332f51bf = (0, $def2de46b9306e8a$export$d
   .slide-confirm-handle.dragging { transition: none; }
   .slide-confirm-handle:hover { cursor: grab; }
   .slide-confirm-handle:active { cursor: grabbing; }
+  .slide-confirm-handle.flat {
+    background: var(--slide-handle-color, var(--card-background-color));
+    box-shadow: rgba(0, 0, 0, .24) 0 3px 8px;
+  }
 
   .slide-confirm.confirmed .slide-confirm-track {
     background-color: var(--slide-confirmed-track-color, var(--success-color));
@@ -1438,8 +1443,11 @@ const $120c5a859c012378$export$1601f807332f51bf = (0, $def2de46b9306e8a$export$d
   }
   .slide-confirm.confirmed .slide-confirm-handle {
     border-color: color-mix(in srgb, var(--slide-confirmed-track-color, var(--success-color)) 35%, #000);
-    background-color: var(--slide-confirmed-handle-color, var(--card-background-color));
+    background: radial-gradient(circle at 32% 27%, color-mix(in srgb, var(--slide-confirmed-handle-color, #ffffff) 42%, #ffffff), var(--slide-confirmed-handle-color, #ffffff) 58%, color-mix(in srgb, var(--slide-confirmed-handle-color, #ffffff) 76%, #000000));
     color: var(--slide-confirmed-track-color, var(--success-color));
+  }
+  .slide-confirm.confirmed .slide-confirm-handle.flat {
+    background: var(--slide-confirmed-handle-color, var(--card-background-color));
   }
 
   .slide-confirm .unconfirmed { display: block; }
@@ -1521,7 +1529,7 @@ class $3fffcf1c09fcf223$export$eb0022d780a83cd2 extends (0, $ab210b2da7b39b9d$ex
 				<div class="slide-confirm-track"></div>
 				<div class="slide-confirm-text unconfirmed">${this.config.textUnconfirmed}</div>
 				<div class="slide-confirm-text confirmed">${this.config.textConfirmed}</div>
-				<div class="slide-confirm-handle" role="slider" aria-label=${this.config.name || 'Confirm action'}
+				<div class=${`slide-confirm-handle ${this.config.appearance?.handle_style === 'flat' ? 'flat' : 'three-d'}`} role="slider" aria-label=${this.config.name || 'Confirm action'}
 					@pointerdown=${(e)=>this.dragStart(e)}
 					@pointerup=${(e)=>this.dragEnd(e)}
 					@pointercancel=${(e)=>this.dragEnd(e)}>
@@ -1715,6 +1723,7 @@ class $d067581fc0d59830$export$70b4c5ffd4aff272 extends (0, $ab210b2da7b39b9d$ex
             appearance: {
                 background_color: '#1976d2',
                 handle_color: '#ffffff',
+                handle_style: '3d',
                 text_color: '#ffffff',
                 confirmed_background_color: '#2e7d32',
                 confirmed_handle_color: '#ffffff',
@@ -1751,6 +1760,9 @@ class $d067581fc0d59830$export$70b4c5ffd4aff272 extends (0, $ab210b2da7b39b9d$ex
     _color(path, label, fallback) {
         return (0, $f58f44579a4747ac$export$c0bb0b647f701bb5)`<div class="field"><label>${label}</label><input type="color" .value=${String(this._value(path, fallback))} @input=${(e)=>this._update(path, e.target.value)}></div>`;
     }
+    _select(path, label, options) {
+        return (0, $f58f44579a4747ac$export$c0bb0b647f701bb5)`<div class="field"><label>${label}</label><select .value=${String(this._value(path, options[0][0]))} @change=${(e)=>this._update(path, e.target.value)}>${options.map(([value, title])=>(0, $f58f44579a4747ac$export$c0bb0b647f701bb5)`<option value=${value}>${title}</option>`)}</select></div>`;
+    }
     render() {
         return (0, $f58f44579a4747ac$export$c0bb0b647f701bb5)`
       <p class="hint">Use the controls below to configure the first slider. The dashboard editor updates its live card preview as you change values.</p>
@@ -1769,6 +1781,16 @@ class $d067581fc0d59830$export$70b4c5ffd4aff272 extends (0, $ab210b2da7b39b9d$ex
       <div class="grid">
         ${this._color('sliders.0.appearance.background_color', 'Background color', '#1976d2')}
         ${this._color('sliders.0.appearance.handle_color', 'Handle color', '#ffffff')}
+        ${this._select('sliders.0.appearance.handle_style', 'Round handle style', [
+            [
+                '3d',
+                '3D ball'
+            ],
+            [
+                'flat',
+                'Flat circle'
+            ]
+        ])}
         ${this._color('sliders.0.appearance.text_color', 'Text color', '#ffffff')}
         ${this._color('sliders.0.appearance.confirmed_background_color', 'Success background', '#2e7d32')}
         ${this._color('sliders.0.appearance.confirmed_handle_color', 'Success handle', '#ffffff')}

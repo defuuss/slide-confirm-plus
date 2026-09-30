@@ -47,8 +47,8 @@ export const slideConfirmStyles = css`
     margin: 2px;
     border-radius: 50%;
     border: 2px solid color-mix(in srgb, var(--slide-track-color, var(--primary-color)) 35%, #000);
-    background-color: var(--slide-handle-color, var(--card-background-color));
-    box-shadow: rgba(0, 0, 0, .24) 0 3px 8px;
+    background: radial-gradient(circle at 32% 27%, color-mix(in srgb, var(--slide-handle-color, #ffffff) 42%, #ffffff), var(--slide-handle-color, #ffffff) 58%, color-mix(in srgb, var(--slide-handle-color, #ffffff) 76%, #000000));
+    box-shadow: rgba(0, 0, 0, .28) 0 5px 10px, inset rgba(255, 255, 255, .48) 0 1px 1px;
     box-sizing: border-box;
     text-align: center;
     font-size: 20px;
@@ -64,6 +64,10 @@ export const slideConfirmStyles = css`
   .slide-confirm-handle.dragging { transition: none; }
   .slide-confirm-handle:hover { cursor: grab; }
   .slide-confirm-handle:active { cursor: grabbing; }
+  .slide-confirm-handle.flat {
+    background: var(--slide-handle-color, var(--card-background-color));
+    box-shadow: rgba(0, 0, 0, .24) 0 3px 8px;
+  }
 
   .slide-confirm.confirmed .slide-confirm-track {
     background-color: var(--slide-confirmed-track-color, var(--success-color));
@@ -71,8 +75,11 @@ export const slideConfirmStyles = css`
   }
   .slide-confirm.confirmed .slide-confirm-handle {
     border-color: color-mix(in srgb, var(--slide-confirmed-track-color, var(--success-color)) 35%, #000);
-    background-color: var(--slide-confirmed-handle-color, var(--card-background-color));
+    background: radial-gradient(circle at 32% 27%, color-mix(in srgb, var(--slide-confirmed-handle-color, #ffffff) 42%, #ffffff), var(--slide-confirmed-handle-color, #ffffff) 58%, color-mix(in srgb, var(--slide-confirmed-handle-color, #ffffff) 76%, #000000));
     color: var(--slide-confirmed-track-color, var(--success-color));
+  }
+  .slide-confirm.confirmed .slide-confirm-handle.flat {
+    background: var(--slide-confirmed-handle-color, var(--card-background-color));
   }
 
   .slide-confirm .unconfirmed { display: block; }

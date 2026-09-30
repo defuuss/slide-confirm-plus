@@ -31,6 +31,7 @@ export interface SlideConfirmButtonConfig {
 export interface SlideConfirmAppearance {
 	background_color?: string;
 	handle_color?: string;
+	handle_style?: 'flat' | '3d';
 	text_color?: string;
 	confirmed_background_color?: string;
 	confirmed_handle_color?: string;
@@ -127,7 +128,7 @@ export class SlideConfirmButton extends LitElement {
 				<div class="slide-confirm-track"></div>
 				<div class="slide-confirm-text unconfirmed">${this.config.textUnconfirmed}</div>
 				<div class="slide-confirm-text confirmed">${this.config.textConfirmed}</div>
-				<div class="slide-confirm-handle" role="slider" aria-label=${this.config.name || 'Confirm action'}
+				<div class=${`slide-confirm-handle ${this.config.appearance?.handle_style === 'flat' ? 'flat' : 'three-d'}`} role="slider" aria-label=${this.config.name || 'Confirm action'}
 					@pointerdown=${(e: PointerEvent) => this.dragStart(e)}
 					@pointerup=${(e: PointerEvent) => this.dragEnd(e)}
 					@pointercancel=${(e: PointerEvent) => this.dragEnd(e)}>
