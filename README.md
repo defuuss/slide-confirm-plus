@@ -61,7 +61,7 @@ sliders:
       background_opacity: 0.18
       handle_color: '#ffffff'
       handle_style: 3d
-      handle_position: center
+      handle_position: left
       text_color: '#ffffff'
       confirmed_background_color: '#2e7d32'
       confirmed_background_opacity: 0.96
@@ -102,7 +102,7 @@ All color values are hex colors. The visual editor writes these values for you.
 | `background_opacity` | `0.92` | Normal track opacity; use `0` for transparent. |
 | `handle_color` | `#ffffff` | Normal handle color. |
 | `handle_style` | `3d` | `3d` gives the round handle a glossy ball finish; `flat` uses a flat circle. |
-| `handle_position` | `center` | Initial handle position: `center` or `left`. |
+| `handle_position` | `left` | Initial handle position: `left` (inset by the same gap as top/bottom) or `center`. |
 | `text_color` | `#ffffff` | Instruction and completion text color. |
 | `confirmed_background_color` | `#2e7d32` | Track color after a successful slide. |
 | `confirmed_background_opacity` | `0.96` | Success-track opacity. |

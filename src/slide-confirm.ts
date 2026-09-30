@@ -86,9 +86,13 @@ export class SlideConfirmButton extends LitElement {
 	}
 
 	private _startX(): number {
-		return this.config.appearance?.handle_position === 'left'
-			? 0
-			: (this._container.clientWidth - this._handle.clientWidth) / 2;
+		if (this.config.appearance?.handle_position !== 'left') {
+			return (this._container.clientWidth - this._handle.clientWidth) / 2;
+		}
+		const appearance = this.config.appearance || {};
+		const height = this._safeNumber(appearance.height, 56, 40, 120);
+		const handleSize = Math.min(this._safeNumber(appearance.handle_size, 48, 32, 100), height - 4);
+		return (height - handleSize) / 2;
 	}
 
 	dragStart(e: PointerEvent) {

@@ -42,7 +42,7 @@ export class SlideConfirmEditor extends LitElement {
       textUnconfirmed: 'Slide to confirm', textConfirmed: 'Done!',
       iconUnconfirmed: 'mdi:chevron-right', iconConfirmed: 'mdi:check',
       confirm_action: { action: 'call-service', service: '', target: { entity_id: '' } },
-      appearance: { background_color: '#1976d2', background_opacity: 0.92, handle_color: '#ffffff', handle_style: '3d', handle_position: 'center', text_color: '#ffffff', confirmed_background_color: '#2e7d32', confirmed_background_opacity: 0.96, confirmed_handle_color: '#ffffff', height: 56, handle_size: 48, border_radius: 28 }
+      appearance: { background_color: '#1976d2', background_opacity: 0.92, handle_color: '#ffffff', handle_style: '3d', handle_position: 'left', text_color: '#ffffff', confirmed_background_color: '#2e7d32', confirmed_background_opacity: 0.96, confirmed_handle_color: '#ffffff', height: 56, handle_size: 48, border_radius: 28 }
     };
   }
 
@@ -103,7 +103,7 @@ export class SlideConfirmEditor extends LitElement {
           ${this._number('sliders.0.appearance.background_opacity', 'Track opacity (0 = transparent)', 0, 1, .05)}
           ${this._color('sliders.0.appearance.handle_color', 'Round-handle color', '#ffffff')}
           ${this._select('sliders.0.appearance.handle_style', 'Round-handle style', [['3d', '3D ball'], ['flat', 'Flat circle']])}
-          ${this._select('sliders.0.appearance.handle_position', 'Round-handle position', [['center', 'Center'], ['left', 'Left']])}
+          ${this._select('sliders.0.appearance.handle_position', 'Round-handle position', [['left', 'Left, inset evenly'], ['center', 'Center']])}
           ${this._color('sliders.0.appearance.text_color', 'Text color', '#ffffff')}
           ${this._color('sliders.0.appearance.confirmed_background_color', 'Success background', '#2e7d32')}
           ${this._number('sliders.0.appearance.confirmed_background_opacity', 'Success opacity', 0, 1, .05)}

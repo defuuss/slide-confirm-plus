@@ -1262,7 +1262,7 @@ class $a399cc6bbb0eb26a$export$da0658243c468832 extends (0, $ab210b2da7b39b9d$ex
                         background_opacity: 0.92,
                         handle_color: "#ffffff",
                         handle_style: "3d",
-                        handle_position: "center",
+                        handle_position: "left",
                         text_color: "#ffffff",
                         confirmed_background_color: "#2e7d32",
                         confirmed_handle_color: "#ffffff",
@@ -1379,8 +1379,6 @@ const $120c5a859c012378$export$1601f807332f51bf = (0, $def2de46b9306e8a$export$d
     padding: 0;
     font-size: .75em;
     position: relative;
-    display: flex;
-    align-items: center;
     user-select: none;
     -moz-user-select: none;
     -webkit-user-select: none;
@@ -1411,7 +1409,8 @@ const $120c5a859c012378$export$1601f807332f51bf = (0, $def2de46b9306e8a$export$d
   }
 
   .slide-confirm-handle {
-    position: relative;
+    position: absolute;
+    top: calc((var(--slide-height, 56px) - var(--slide-handle-size, 48px)) / 2);
     width: var(--slide-handle-size, 48px);
     height: var(--slide-handle-size, 48px);
     margin: 0;
@@ -1431,7 +1430,7 @@ const $120c5a859c012378$export$1601f807332f51bf = (0, $def2de46b9306e8a$export$d
     align-items: center;
     justify-content: center;
   }
-  .slide-confirm-handle.start-left { left: 0; }
+  .slide-confirm-handle.start-left { left: calc((var(--slide-height, 56px) - var(--slide-handle-size, 48px)) / 2); }
   .slide-confirm-handle.start-centered { left: calc(50% - var(--slide-handle-size, 48px) / 2); }
   .slide-confirm-handle.dragging { transition: none; }
   .slide-confirm-handle:hover { cursor: grab; }
@@ -1493,7 +1492,11 @@ class $3fffcf1c09fcf223$export$eb0022d780a83cd2 extends (0, $ab210b2da7b39b9d$ex
         ].join(';');
     }
     _startX() {
-        return this.config.appearance?.handle_position === 'left' ? 0 : (this._container.clientWidth - this._handle.clientWidth) / 2;
+        if (this.config.appearance?.handle_position !== 'left') return (this._container.clientWidth - this._handle.clientWidth) / 2;
+        const appearance = this.config.appearance || {};
+        const height = this._safeNumber(appearance.height, 56, 40, 120);
+        const handleSize = Math.min(this._safeNumber(appearance.handle_size, 48, 32, 100), height - 4);
+        return (height - handleSize) / 2;
     }
     dragStart(e) {
         if (this._confirmed || e.button !== 0) return;
@@ -1747,7 +1750,7 @@ class $d067581fc0d59830$export$70b4c5ffd4aff272 extends (0, $ab210b2da7b39b9d$ex
                 background_opacity: 0.92,
                 handle_color: '#ffffff',
                 handle_style: '3d',
-                handle_position: 'center',
+                handle_position: 'left',
                 text_color: '#ffffff',
                 confirmed_background_color: '#2e7d32',
                 confirmed_background_opacity: 0.96,
@@ -1825,12 +1828,12 @@ class $d067581fc0d59830$export$70b4c5ffd4aff272 extends (0, $ab210b2da7b39b9d$ex
         ])}
           ${this._select('sliders.0.appearance.handle_position', 'Round-handle position', [
             [
-                'center',
-                'Center'
+                'left',
+                'Left, inset evenly'
             ],
             [
-                'left',
-                'Left'
+                'center',
+                'Center'
             ]
         ])}
           ${this._color('sliders.0.appearance.text_color', 'Text color', '#ffffff')}

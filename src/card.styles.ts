@@ -9,8 +9,6 @@ export const slideConfirmStyles = css`
     padding: 0;
     font-size: .75em;
     position: relative;
-    display: flex;
-    align-items: center;
     user-select: none;
     -moz-user-select: none;
     -webkit-user-select: none;
@@ -41,7 +39,8 @@ export const slideConfirmStyles = css`
   }
 
   .slide-confirm-handle {
-    position: relative;
+    position: absolute;
+    top: calc((var(--slide-height, 56px) - var(--slide-handle-size, 48px)) / 2);
     width: var(--slide-handle-size, 48px);
     height: var(--slide-handle-size, 48px);
     margin: 0;
@@ -61,7 +60,7 @@ export const slideConfirmStyles = css`
     align-items: center;
     justify-content: center;
   }
-  .slide-confirm-handle.start-left { left: 0; }
+  .slide-confirm-handle.start-left { left: calc((var(--slide-height, 56px) - var(--slide-handle-size, 48px)) / 2); }
   .slide-confirm-handle.start-centered { left: calc(50% - var(--slide-handle-size, 48px) / 2); }
   .slide-confirm-handle.dragging { transition: none; }
   .slide-confirm-handle:hover { cursor: grab; }
