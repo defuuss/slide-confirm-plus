@@ -1259,8 +1259,10 @@ class $a399cc6bbb0eb26a$export$da0658243c468832 extends (0, $ab210b2da7b39b9d$ex
                     },
                     appearance: {
                         background_color: "#1976d2",
+                        background_opacity: 0.92,
                         handle_color: "#ffffff",
                         handle_style: "3d",
+                        handle_position: "center",
                         text_color: "#ffffff",
                         confirmed_background_color: "#2e7d32",
                         confirmed_handle_color: "#ffffff",
@@ -1390,7 +1392,7 @@ const $120c5a859c012378$export$1601f807332f51bf = (0, $def2de46b9306e8a$export$d
     inset: 0;
     background-color: var(--slide-track-color, var(--primary-color));
     transition: background-color 250ms;
-    opacity: .92;
+    opacity: var(--slide-track-opacity, .92);
     border-radius: var(--slide-radius, 28px);
   }
 
@@ -1410,7 +1412,6 @@ const $120c5a859c012378$export$1601f807332f51bf = (0, $def2de46b9306e8a$export$d
 
   .slide-confirm-handle {
     position: relative;
-    left: 0;
     width: var(--slide-handle-size, 48px);
     height: var(--slide-handle-size, 48px);
     margin: 0;
@@ -1430,6 +1431,8 @@ const $120c5a859c012378$export$1601f807332f51bf = (0, $def2de46b9306e8a$export$d
     align-items: center;
     justify-content: center;
   }
+  .slide-confirm-handle.start-left { left: 0; }
+  .slide-confirm-handle.start-centered { left: calc(50% - var(--slide-handle-size, 48px) / 2); }
   .slide-confirm-handle.dragging { transition: none; }
   .slide-confirm-handle:hover { cursor: grab; }
   .slide-confirm-handle:active { cursor: grabbing; }
@@ -1440,7 +1443,7 @@ const $120c5a859c012378$export$1601f807332f51bf = (0, $def2de46b9306e8a$export$d
 
   .slide-confirm.confirmed .slide-confirm-track {
     background-color: var(--slide-confirmed-track-color, var(--success-color));
-    opacity: .96;
+    opacity: var(--slide-confirmed-track-opacity, .96);
   }
   .slide-confirm.confirmed .slide-confirm-handle {
     border-color: color-mix(in srgb, var(--slide-confirmed-track-color, var(--success-color)) 35%, #000);
@@ -1474,16 +1477,23 @@ class $3fffcf1c09fcf223$export$eb0022d780a83cd2 extends (0, $ab210b2da7b39b9d$ex
         const height = this._safeNumber(appearance.height, 56, 40, 120);
         const handleSize = Math.min(this._safeNumber(appearance.handle_size, 48, 32, 100), height - 4);
         const radius = this._safeNumber(appearance.border_radius, Math.round(height / 2), 0, 60);
+        const trackOpacity = this._safeNumber(appearance.background_opacity, .92, 0, 1);
+        const confirmedTrackOpacity = this._safeNumber(appearance.confirmed_background_opacity, .96, 0, 1);
         return [
             `--slide-track-color: ${this._safeColor(appearance.background_color, '#1976d2')}`,
             `--slide-handle-color: ${this._safeColor(appearance.handle_color, '#ffffff')}`,
             `--slide-text-color: ${this._safeColor(appearance.text_color, '#ffffff')}`,
             `--slide-confirmed-track-color: ${this._safeColor(appearance.confirmed_background_color, '#2e7d32')}`,
             `--slide-confirmed-handle-color: ${this._safeColor(appearance.confirmed_handle_color, '#ffffff')}`,
+            `--slide-track-opacity: ${trackOpacity}`,
+            `--slide-confirmed-track-opacity: ${confirmedTrackOpacity}`,
             `--slide-height: ${height}px`,
             `--slide-handle-size: ${handleSize}px`,
             `--slide-radius: ${radius}px`
         ].join(';');
+    }
+    _startX() {
+        return this.config.appearance?.handle_position === 'left' ? 0 : (this._container.clientWidth - this._handle.clientWidth) / 2;
     }
     dragStart(e) {
         if (this._confirmed || e.button !== 0) return;
@@ -1519,7 +1529,7 @@ class $3fffcf1c09fcf223$export$eb0022d780a83cd2 extends (0, $ab210b2da7b39b9d$ex
         return x;
     }
     drag(e) {
-        this._handle.style.transform = `translateX(${this._calculateX(e)}px)`;
+        this._handle.style.transform = `translateX(${this._calculateX(e) - this._startX()}px)`;
     }
     render() {
         const content = (0, $f58f44579a4747ac$export$c0bb0b647f701bb5)`
@@ -1530,7 +1540,7 @@ class $3fffcf1c09fcf223$export$eb0022d780a83cd2 extends (0, $ab210b2da7b39b9d$ex
 				<div class="slide-confirm-track"></div>
 				<div class="slide-confirm-text unconfirmed">${this.config.textUnconfirmed}</div>
 				<div class="slide-confirm-text confirmed">${this.config.textConfirmed}</div>
-				<div class=${`slide-confirm-handle ${this.config.appearance?.handle_style === 'flat' ? 'flat' : 'three-d'}`} role="slider" aria-label=${this.config.name || 'Confirm action'}
+				<div class=${`slide-confirm-handle ${this.config.appearance?.handle_style === 'flat' ? 'flat' : 'three-d'} ${this.config.appearance?.handle_position === 'left' ? 'start-left' : 'start-centered'}`} role="slider" aria-label=${this.config.name || 'Confirm action'}
 					@pointerdown=${(e)=>this.dragStart(e)}
 					@pointerup=${(e)=>this.dragEnd(e)}
 					@pointercancel=${(e)=>this.dragEnd(e)}>
@@ -1734,10 +1744,13 @@ class $d067581fc0d59830$export$70b4c5ffd4aff272 extends (0, $ab210b2da7b39b9d$ex
             },
             appearance: {
                 background_color: '#1976d2',
+                background_opacity: 0.92,
                 handle_color: '#ffffff',
                 handle_style: '3d',
+                handle_position: 'center',
                 text_color: '#ffffff',
                 confirmed_background_color: '#2e7d32',
+                confirmed_background_opacity: 0.96,
                 confirmed_handle_color: '#ffffff',
                 height: 56,
                 handle_size: 48,
@@ -1766,8 +1779,8 @@ class $d067581fc0d59830$export$70b4c5ffd4aff272 extends (0, $ab210b2da7b39b9d$ex
     _text(path, label) {
         return (0, $f58f44579a4747ac$export$c0bb0b647f701bb5)`<div class="field"><label>${label}</label><input .value=${String(this._value(path))} @input=${(e)=>this._update(path, e.target.value)}></div>`;
     }
-    _number(path, label, min, max) {
-        return (0, $f58f44579a4747ac$export$c0bb0b647f701bb5)`<div class="field"><label>${label}</label><input type="number" min=${min} max=${max} .value=${String(this._value(path))} @input=${(e)=>this._update(path, Number(e.target.value))}></div>`;
+    _number(path, label, min, max, step = 1) {
+        return (0, $f58f44579a4747ac$export$c0bb0b647f701bb5)`<div class="field"><label>${label}</label><input type="number" min=${min} max=${max} step=${step} .value=${String(this._value(path))} @input=${(e)=>this._update(path, Number(e.target.value))}></div>`;
     }
     _color(path, label, fallback) {
         return (0, $f58f44579a4747ac$export$c0bb0b647f701bb5)`<div class="field"><label>${label}</label><input type="color" .value=${String(this._value(path, fallback))} @input=${(e)=>this._update(path, e.target.value)}></div>`;
@@ -1798,6 +1811,7 @@ class $d067581fc0d59830$export$70b4c5ffd4aff272 extends (0, $ab210b2da7b39b9d$ex
           ${this._text('sliders.0.iconUnconfirmed', 'Round-handle icon')}
           ${this._text('sliders.0.iconConfirmed', 'Success icon')}
           ${this._color('sliders.0.appearance.background_color', 'Background color', '#1976d2')}
+          ${this._number('sliders.0.appearance.background_opacity', 'Track opacity (0 = transparent)', 0, 1, .05)}
           ${this._color('sliders.0.appearance.handle_color', 'Round-handle color', '#ffffff')}
           ${this._select('sliders.0.appearance.handle_style', 'Round-handle style', [
             [
@@ -1809,8 +1823,19 @@ class $d067581fc0d59830$export$70b4c5ffd4aff272 extends (0, $ab210b2da7b39b9d$ex
                 'Flat circle'
             ]
         ])}
+          ${this._select('sliders.0.appearance.handle_position', 'Round-handle position', [
+            [
+                'center',
+                'Center'
+            ],
+            [
+                'left',
+                'Left'
+            ]
+        ])}
           ${this._color('sliders.0.appearance.text_color', 'Text color', '#ffffff')}
           ${this._color('sliders.0.appearance.confirmed_background_color', 'Success background', '#2e7d32')}
+          ${this._number('sliders.0.appearance.confirmed_background_opacity', 'Success opacity', 0, 1, .05)}
           ${this._color('sliders.0.appearance.confirmed_handle_color', 'Success handle', '#ffffff')}
           ${this._number('sliders.0.appearance.height', 'Height (px)', 40, 120)}
           ${this._number('sliders.0.appearance.handle_size', 'Handle size (px)', 32, 100)}

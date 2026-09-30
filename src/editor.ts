@@ -42,7 +42,7 @@ export class SlideConfirmEditor extends LitElement {
       textUnconfirmed: 'Slide to confirm', textConfirmed: 'Done!',
       iconUnconfirmed: 'mdi:chevron-right', iconConfirmed: 'mdi:check',
       confirm_action: { action: 'call-service', service: '', target: { entity_id: '' } },
-      appearance: { background_color: '#1976d2', handle_color: '#ffffff', handle_style: '3d', text_color: '#ffffff', confirmed_background_color: '#2e7d32', confirmed_handle_color: '#ffffff', height: 56, handle_size: 48, border_radius: 28 }
+      appearance: { background_color: '#1976d2', background_opacity: 0.92, handle_color: '#ffffff', handle_style: '3d', handle_position: 'center', text_color: '#ffffff', confirmed_background_color: '#2e7d32', confirmed_background_opacity: 0.96, confirmed_handle_color: '#ffffff', height: 56, handle_size: 48, border_radius: 28 }
     };
   }
 
@@ -64,8 +64,8 @@ export class SlideConfirmEditor extends LitElement {
     return html`<div class="field"><label>${label}</label><input .value=${String(this._value(path))} @input=${(e: Event) => this._update(path, (e.target as HTMLInputElement).value)}></div>`;
   }
 
-  private _number(path: string, label: string, min: number, max: number) {
-    return html`<div class="field"><label>${label}</label><input type="number" min=${min} max=${max} .value=${String(this._value(path))} @input=${(e: Event) => this._update(path, Number((e.target as HTMLInputElement).value))}></div>`;
+  private _number(path: string, label: string, min: number, max: number, step = 1) {
+    return html`<div class="field"><label>${label}</label><input type="number" min=${min} max=${max} step=${step} .value=${String(this._value(path))} @input=${(e: Event) => this._update(path, Number((e.target as HTMLInputElement).value))}></div>`;
   }
 
   private _color(path: string, label: string, fallback: string) {
@@ -100,10 +100,13 @@ export class SlideConfirmEditor extends LitElement {
           ${this._text('sliders.0.iconUnconfirmed', 'Round-handle icon')}
           ${this._text('sliders.0.iconConfirmed', 'Success icon')}
           ${this._color('sliders.0.appearance.background_color', 'Background color', '#1976d2')}
+          ${this._number('sliders.0.appearance.background_opacity', 'Track opacity (0 = transparent)', 0, 1, .05)}
           ${this._color('sliders.0.appearance.handle_color', 'Round-handle color', '#ffffff')}
           ${this._select('sliders.0.appearance.handle_style', 'Round-handle style', [['3d', '3D ball'], ['flat', 'Flat circle']])}
+          ${this._select('sliders.0.appearance.handle_position', 'Round-handle position', [['center', 'Center'], ['left', 'Left']])}
           ${this._color('sliders.0.appearance.text_color', 'Text color', '#ffffff')}
           ${this._color('sliders.0.appearance.confirmed_background_color', 'Success background', '#2e7d32')}
+          ${this._number('sliders.0.appearance.confirmed_background_opacity', 'Success opacity', 0, 1, .05)}
           ${this._color('sliders.0.appearance.confirmed_handle_color', 'Success handle', '#ffffff')}
           ${this._number('sliders.0.appearance.height', 'Height (px)', 40, 120)}
           ${this._number('sliders.0.appearance.handle_size', 'Handle size (px)', 32, 100)}

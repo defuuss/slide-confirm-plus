@@ -37,6 +37,7 @@ The editor keeps the essentials visible and places styling under one expandable 
 - instruction and completion text
 - icon names
 - background, handle, text, success-background, and success-handle color pickers
+- track opacity, including a transparent resting track, and a separate green success track
 - a simple selector for a glossy 3D ball or flat round handle
 - slider height, handle size, and corner radius
 
@@ -57,10 +58,13 @@ sliders:
     confirmation_duration: 1800
     appearance:
       background_color: '#0d47a1'
+      background_opacity: 0.18
       handle_color: '#ffffff'
       handle_style: 3d
+      handle_position: center
       text_color: '#ffffff'
       confirmed_background_color: '#2e7d32'
+      confirmed_background_opacity: 0.96
       confirmed_handle_color: '#ffffff'
       height: 64
       handle_size: 54
@@ -95,10 +99,13 @@ All color values are hex colors. The visual editor writes these values for you.
 | Field | Default | Description |
 | --- | --- | --- |
 | `background_color` | `#1976d2` | Normal slider-track color. |
+| `background_opacity` | `0.92` | Normal track opacity; use `0` for transparent. |
 | `handle_color` | `#ffffff` | Normal handle color. |
 | `handle_style` | `3d` | `3d` gives the round handle a glossy ball finish; `flat` uses a flat circle. |
+| `handle_position` | `center` | Initial handle position: `center` or `left`. |
 | `text_color` | `#ffffff` | Instruction and completion text color. |
 | `confirmed_background_color` | `#2e7d32` | Track color after a successful slide. |
+| `confirmed_background_opacity` | `0.96` | Success-track opacity. |
 | `confirmed_handle_color` | `#ffffff` | Handle color after a successful slide. |
 | `height` | `56` | Slider height in pixels; 40–120. |
 | `handle_size` | `48` | Handle diameter in pixels; 32–100. It is kept inside the slider height. |

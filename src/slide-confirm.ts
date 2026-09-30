@@ -32,8 +32,11 @@ export interface SlideConfirmAppearance {
 	background_color?: string;
 	handle_color?: string;
 	handle_style?: 'flat' | '3d';
+	handle_position?: 'left' | 'center';
+	background_opacity?: number;
 	text_color?: string;
 	confirmed_background_color?: string;
+	confirmed_background_opacity?: number;
 	confirmed_handle_color?: string;
 	height?: number;
 	handle_size?: number;
@@ -69,14 +72,23 @@ export class SlideConfirmButton extends LitElement {
 		const height = this._safeNumber(appearance.height, 56, 40, 120);
 		const handleSize = Math.min(this._safeNumber(appearance.handle_size, 48, 32, 100), height - 4);
 		const radius = this._safeNumber(appearance.border_radius, Math.round(height / 2), 0, 60);
+		const trackOpacity = this._safeNumber(appearance.background_opacity, .92, 0, 1);
+		const confirmedTrackOpacity = this._safeNumber(appearance.confirmed_background_opacity, .96, 0, 1);
 		return [
 			`--slide-track-color: ${this._safeColor(appearance.background_color, '#1976d2')}`,
 			`--slide-handle-color: ${this._safeColor(appearance.handle_color, '#ffffff')}`,
 			`--slide-text-color: ${this._safeColor(appearance.text_color, '#ffffff')}`,
 			`--slide-confirmed-track-color: ${this._safeColor(appearance.confirmed_background_color, '#2e7d32')}`,
 			`--slide-confirmed-handle-color: ${this._safeColor(appearance.confirmed_handle_color, '#ffffff')}`,
+			`--slide-track-opacity: ${trackOpacity}`, `--slide-confirmed-track-opacity: ${confirmedTrackOpacity}`,
 			`--slide-height: ${height}px`, `--slide-handle-size: ${handleSize}px`, `--slide-radius: ${radius}px`
 		].join(';');
+	}
+
+	private _startX(): number {
+		return this.config.appearance?.handle_position === 'left'
+			? 0
+			: (this._container.clientWidth - this._handle.clientWidth) / 2;
 	}
 
 	dragStart(e: PointerEvent) {
@@ -116,7 +128,7 @@ export class SlideConfirmButton extends LitElement {
 	}
 
 	drag(e: PointerEvent) {
-		this._handle.style.transform = `translateX(${this._calculateX(e)}px)`;
+		this._handle.style.transform = `translateX(${this._calculateX(e) - this._startX()}px)`;
 	}
 
 	render() {
@@ -128,7 +140,7 @@ export class SlideConfirmButton extends LitElement {
 				<div class="slide-confirm-track"></div>
 				<div class="slide-confirm-text unconfirmed">${this.config.textUnconfirmed}</div>
 				<div class="slide-confirm-text confirmed">${this.config.textConfirmed}</div>
-				<div class=${`slide-confirm-handle ${this.config.appearance?.handle_style === 'flat' ? 'flat' : 'three-d'}`} role="slider" aria-label=${this.config.name || 'Confirm action'}
+				<div class=${`slide-confirm-handle ${this.config.appearance?.handle_style === 'flat' ? 'flat' : 'three-d'} ${this.config.appearance?.handle_position === 'left' ? 'start-left' : 'start-centered'}`} role="slider" aria-label=${this.config.name || 'Confirm action'}
 					@pointerdown=${(e: PointerEvent) => this.dragStart(e)}
 					@pointerup=${(e: PointerEvent) => this.dragEnd(e)}
 					@pointercancel=${(e: PointerEvent) => this.dragEnd(e)}>

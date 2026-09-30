@@ -22,7 +22,7 @@ export const slideConfirmStyles = css`
     inset: 0;
     background-color: var(--slide-track-color, var(--primary-color));
     transition: background-color 250ms;
-    opacity: .92;
+    opacity: var(--slide-track-opacity, .92);
     border-radius: var(--slide-radius, 28px);
   }
 
@@ -42,7 +42,6 @@ export const slideConfirmStyles = css`
 
   .slide-confirm-handle {
     position: relative;
-    left: 0;
     width: var(--slide-handle-size, 48px);
     height: var(--slide-handle-size, 48px);
     margin: 0;
@@ -62,6 +61,8 @@ export const slideConfirmStyles = css`
     align-items: center;
     justify-content: center;
   }
+  .slide-confirm-handle.start-left { left: 0; }
+  .slide-confirm-handle.start-centered { left: calc(50% - var(--slide-handle-size, 48px) / 2); }
   .slide-confirm-handle.dragging { transition: none; }
   .slide-confirm-handle:hover { cursor: grab; }
   .slide-confirm-handle:active { cursor: grabbing; }
@@ -72,7 +73,7 @@ export const slideConfirmStyles = css`
 
   .slide-confirm.confirmed .slide-confirm-track {
     background-color: var(--slide-confirmed-track-color, var(--success-color));
-    opacity: .96;
+    opacity: var(--slide-confirmed-track-opacity, .96);
   }
   .slide-confirm.confirmed .slide-confirm-handle {
     border-color: color-mix(in srgb, var(--slide-confirmed-track-color, var(--success-color)) 35%, #000);
