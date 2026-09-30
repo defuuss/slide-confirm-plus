@@ -104,7 +104,7 @@ export class SlideConfirmButton extends LitElement {
 		this._handle.classList.remove('dragging');
 		this._handle.onpointermove = null;
 		if (this._handle.hasPointerCapture(e.pointerId)) this._handle.releasePointerCapture(e.pointerId);
-		this._handle.style.transform = 'translate(0, -50%)';
+		this._handle.style.transform = 'translateX(0)';
 	}
 
 	private _calculateX(e: PointerEvent) {
@@ -116,7 +116,7 @@ export class SlideConfirmButton extends LitElement {
 	}
 
 	drag(e: PointerEvent) {
-		this._handle.style.transform = `translate(${this._calculateX(e)}px, -50%)`;
+		this._handle.style.transform = `translateX(${this._calculateX(e)}px)`;
 	}
 
 	render() {

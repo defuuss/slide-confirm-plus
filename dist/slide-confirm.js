@@ -1377,6 +1377,8 @@ const $120c5a859c012378$export$1601f807332f51bf = (0, $def2de46b9306e8a$export$d
     padding: 0;
     font-size: .75em;
     position: relative;
+    display: flex;
+    align-items: center;
     user-select: none;
     -moz-user-select: none;
     -webkit-user-select: none;
@@ -1407,8 +1409,7 @@ const $120c5a859c012378$export$1601f807332f51bf = (0, $def2de46b9306e8a$export$d
   }
 
   .slide-confirm-handle {
-    position: absolute;
-    top: 50%;
+    position: relative;
     left: 0;
     width: var(--slide-handle-size, 48px);
     height: var(--slide-handle-size, 48px);
@@ -1424,7 +1425,6 @@ const $120c5a859c012378$export$1601f807332f51bf = (0, $def2de46b9306e8a$export$d
     color: var(--slide-track-color, var(--primary-color));
     user-select: none;
     touch-action: none;
-    transform: translateY(-50%);
     transition: transform 180ms;
     display: flex;
     align-items: center;
@@ -1509,7 +1509,7 @@ class $3fffcf1c09fcf223$export$eb0022d780a83cd2 extends (0, $ab210b2da7b39b9d$ex
         this._handle.classList.remove('dragging');
         this._handle.onpointermove = null;
         if (this._handle.hasPointerCapture(e.pointerId)) this._handle.releasePointerCapture(e.pointerId);
-        this._handle.style.transform = 'translate(0, -50%)';
+        this._handle.style.transform = 'translateX(0)';
     }
     _calculateX(e) {
         const bounds = this._container.getBoundingClientRect();
@@ -1519,7 +1519,7 @@ class $3fffcf1c09fcf223$export$eb0022d780a83cd2 extends (0, $ab210b2da7b39b9d$ex
         return x;
     }
     drag(e) {
-        this._handle.style.transform = `translate(${this._calculateX(e)}px, -50%)`;
+        this._handle.style.transform = `translateX(${this._calculateX(e)}px)`;
     }
     render() {
         const content = (0, $f58f44579a4747ac$export$c0bb0b647f701bb5)`

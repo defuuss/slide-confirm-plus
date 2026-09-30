@@ -9,6 +9,8 @@ export const slideConfirmStyles = css`
     padding: 0;
     font-size: .75em;
     position: relative;
+    display: flex;
+    align-items: center;
     user-select: none;
     -moz-user-select: none;
     -webkit-user-select: none;
@@ -39,8 +41,7 @@ export const slideConfirmStyles = css`
   }
 
   .slide-confirm-handle {
-    position: absolute;
-    top: 50%;
+    position: relative;
     left: 0;
     width: var(--slide-handle-size, 48px);
     height: var(--slide-handle-size, 48px);
@@ -56,7 +57,6 @@ export const slideConfirmStyles = css`
     color: var(--slide-track-color, var(--primary-color));
     user-select: none;
     touch-action: none;
-    transform: translateY(-50%);
     transition: transform 180ms;
     display: flex;
     align-items: center;
