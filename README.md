@@ -30,10 +30,10 @@ type: module
 
 ## Visual editor
 
-The editor supports one primary slider and offers normal inputs instead of a CSS configuration surface:
+The editor keeps the essentials visible and places styling under one expandable section:
 
 - card and slider title
-- service and target entity
+- service and a standard Home Assistant entity dropdown
 - instruction and completion text
 - icon names
 - background, handle, text, success-background, and success-handle color pickers
