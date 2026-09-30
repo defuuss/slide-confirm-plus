@@ -39,12 +39,12 @@ export const slideConfirmStyles = css`
   }
 
   .slide-confirm-handle {
-    position: relative;
-    top: 0;
+    position: absolute;
+    top: 50%;
     left: 0;
     width: var(--slide-handle-size, 48px);
     height: var(--slide-handle-size, 48px);
-    margin: 2px;
+    margin: 0;
     border-radius: 50%;
     border: 2px solid color-mix(in srgb, var(--slide-track-color, var(--primary-color)) 35%, #000);
     background: radial-gradient(circle at 32% 27%, color-mix(in srgb, var(--slide-handle-color, #ffffff) 42%, #ffffff), var(--slide-handle-color, #ffffff) 58%, color-mix(in srgb, var(--slide-handle-color, #ffffff) 76%, #000000));
@@ -56,6 +56,7 @@ export const slideConfirmStyles = css`
     color: var(--slide-track-color, var(--primary-color));
     user-select: none;
     touch-action: none;
+    transform: translateY(-50%);
     transition: transform 180ms;
     display: flex;
     align-items: center;

@@ -1407,12 +1407,12 @@ const $120c5a859c012378$export$1601f807332f51bf = (0, $def2de46b9306e8a$export$d
   }
 
   .slide-confirm-handle {
-    position: relative;
-    top: 0;
+    position: absolute;
+    top: 50%;
     left: 0;
     width: var(--slide-handle-size, 48px);
     height: var(--slide-handle-size, 48px);
-    margin: 2px;
+    margin: 0;
     border-radius: 50%;
     border: 2px solid color-mix(in srgb, var(--slide-track-color, var(--primary-color)) 35%, #000);
     background: radial-gradient(circle at 32% 27%, color-mix(in srgb, var(--slide-handle-color, #ffffff) 42%, #ffffff), var(--slide-handle-color, #ffffff) 58%, color-mix(in srgb, var(--slide-handle-color, #ffffff) 76%, #000000));
@@ -1424,6 +1424,7 @@ const $120c5a859c012378$export$1601f807332f51bf = (0, $def2de46b9306e8a$export$d
     color: var(--slide-track-color, var(--primary-color));
     user-select: none;
     touch-action: none;
+    transform: translateY(-50%);
     transition: transform 180ms;
     display: flex;
     align-items: center;
@@ -1508,7 +1509,7 @@ class $3fffcf1c09fcf223$export$eb0022d780a83cd2 extends (0, $ab210b2da7b39b9d$ex
         this._handle.classList.remove('dragging');
         this._handle.onpointermove = null;
         if (this._handle.hasPointerCapture(e.pointerId)) this._handle.releasePointerCapture(e.pointerId);
-        this._handle.style.transform = 'translateX(0)';
+        this._handle.style.transform = 'translate(0, -50%)';
     }
     _calculateX(e) {
         const bounds = this._container.getBoundingClientRect();
@@ -1518,7 +1519,7 @@ class $3fffcf1c09fcf223$export$eb0022d780a83cd2 extends (0, $ab210b2da7b39b9d$ex
         return x;
     }
     drag(e) {
-        this._handle.style.transform = `translateX(${this._calculateX(e)}px)`;
+        this._handle.style.transform = `translate(${this._calculateX(e)}px, -50%)`;
     }
     render() {
         const content = (0, $f58f44579a4747ac$export$c0bb0b647f701bb5)`
@@ -1692,11 +1693,13 @@ class $d067581fc0d59830$export$70b4c5ffd4aff272 extends (0, $ab210b2da7b39b9d$ex
     .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
     .full { grid-column: 1 / -1; }
     .field { display: flex; flex-direction: column; gap: 6px; }
-    label { color: var(--secondary-text-color); font-size: 0.85rem; }
-    input, ha-textfield { box-sizing: border-box; width: 100%; }
+    label { color: var(--secondary-text-color); font-size: .85rem; }
+    input, select, ha-entity-picker { box-sizing: border-box; width: 100%; min-height: 40px; }
     input[type="color"] { height: 42px; padding: 2px; border: 1px solid var(--divider-color); border-radius: 8px; background: var(--card-background-color); }
-    h3 { margin: 20px 0 10px; font-size: 1rem; }
-    .hint { color: var(--secondary-text-color); font-size: 0.85rem; margin: 0 0 12px; }
+    details { margin-top: 18px; }
+    summary { cursor: pointer; color: var(--primary-color); font-weight: 600; }
+    .advanced { padding-top: 14px; }
+    .hint { color: var(--secondary-text-color); font-size: .85rem; margin: 0 0 12px; }
   `;
     }
     setConfig(config) {
@@ -1704,6 +1707,15 @@ class $d067581fc0d59830$export$70b4c5ffd4aff272 extends (0, $ab210b2da7b39b9d$ex
         this._config.sliders = this._config.sliders?.length ? this._config.sliders : [
             this._defaultSlider()
         ];
+    }
+    firstUpdated() {
+        this._loadEntityPicker();
+    }
+    async _loadEntityPicker() {
+        // HA registers this standard picker through the built-in Glance editor.
+        const glanceCard = customElements.get('hui-glance-card');
+        if (glanceCard?.getConfigElement) await glanceCard.getConfigElement();
+        this._entityPickerReady = Boolean(customElements.get('ha-entity-picker'));
     }
     _defaultSlider() {
         return {
@@ -1751,8 +1763,8 @@ class $d067581fc0d59830$export$70b4c5ffd4aff272 extends (0, $ab210b2da7b39b9d$ex
             composed: true
         }));
     }
-    _text(path, label, type = 'text') {
-        return (0, $f58f44579a4747ac$export$c0bb0b647f701bb5)`<div class="field"><label>${label}</label><input type=${type} .value=${String(this._value(path))} @input=${(e)=>this._update(path, e.target.value)}></div>`;
+    _text(path, label) {
+        return (0, $f58f44579a4747ac$export$c0bb0b647f701bb5)`<div class="field"><label>${label}</label><input .value=${String(this._value(path))} @input=${(e)=>this._update(path, e.target.value)}></div>`;
     }
     _number(path, label, min, max) {
         return (0, $f58f44579a4747ac$export$c0bb0b647f701bb5)`<div class="field"><label>${label}</label><input type="number" min=${min} max=${max} .value=${String(this._value(path))} @input=${(e)=>this._update(path, Number(e.target.value))}></div>`;
@@ -1763,25 +1775,31 @@ class $d067581fc0d59830$export$70b4c5ffd4aff272 extends (0, $ab210b2da7b39b9d$ex
     _select(path, label, options) {
         return (0, $f58f44579a4747ac$export$c0bb0b647f701bb5)`<div class="field"><label>${label}</label><select .value=${String(this._value(path, options[0][0]))} @change=${(e)=>this._update(path, e.target.value)}>${options.map(([value, title])=>(0, $f58f44579a4747ac$export$c0bb0b647f701bb5)`<option value=${value}>${title}</option>`)}</select></div>`;
     }
+    _entityField() {
+        const path = 'sliders.0.confirm_action.target.entity_id';
+        const value = String(this._value(path));
+        if (!this._entityPickerReady) return this._text(path, 'Target entity');
+        return (0, $f58f44579a4747ac$export$c0bb0b647f701bb5)`<div class="field full"><label>Target entity</label><ha-entity-picker .hass=${this.hass} .value=${value} allow-custom-entity @value-changed=${(e)=>this._update(path, e.detail.value)}></ha-entity-picker></div>`;
+    }
     render() {
         return (0, $f58f44579a4747ac$export$c0bb0b647f701bb5)`
-      <p class="hint">Use the controls below to configure the first slider. The dashboard editor updates its live card preview as you change values.</p>
+      <p class="hint">Choose the entity and service first. The dashboard preview updates as you make changes.</p>
       <div class="grid">
         ${this._text('header', 'Card title')}
         ${this._text('sliders.0.name', 'Slider title')}
-        ${this._text('sliders.0.icon', 'Title icon (MDI)')}
-        ${this._text('sliders.0.confirm_action.service', 'Service (for example switch.toggle)')}
-        <div class="full">${this._text('sliders.0.confirm_action.target.entity_id', 'Target entity')}</div>
-        <div class="full">${this._text('sliders.0.textUnconfirmed', 'Instruction text')}</div>
-        <div class="full">${this._text('sliders.0.textConfirmed', 'Success text')}</div>
-        ${this._text('sliders.0.iconUnconfirmed', 'Handle icon (before)')}
-        ${this._text('sliders.0.iconConfirmed', 'Handle icon (after)')}
+        ${this._entityField()}
+        <div class="full">${this._text('sliders.0.confirm_action.service', 'Service, for example switch.toggle')}</div>
       </div>
-      <h3>Appearance</h3>
-      <div class="grid">
-        ${this._color('sliders.0.appearance.background_color', 'Background color', '#1976d2')}
-        ${this._color('sliders.0.appearance.handle_color', 'Handle color', '#ffffff')}
-        ${this._select('sliders.0.appearance.handle_style', 'Round handle style', [
+      <details>
+        <summary>Style, icons, and text</summary>
+        <div class="grid advanced">
+          <div class="full">${this._text('sliders.0.textUnconfirmed', 'Instruction text')}</div>
+          <div class="full">${this._text('sliders.0.textConfirmed', 'Success text')}</div>
+          ${this._text('sliders.0.iconUnconfirmed', 'Round-handle icon')}
+          ${this._text('sliders.0.iconConfirmed', 'Success icon')}
+          ${this._color('sliders.0.appearance.background_color', 'Background color', '#1976d2')}
+          ${this._color('sliders.0.appearance.handle_color', 'Round-handle color', '#ffffff')}
+          ${this._select('sliders.0.appearance.handle_style', 'Round-handle style', [
             [
                 '3d',
                 '3D ball'
@@ -1791,17 +1809,18 @@ class $d067581fc0d59830$export$70b4c5ffd4aff272 extends (0, $ab210b2da7b39b9d$ex
                 'Flat circle'
             ]
         ])}
-        ${this._color('sliders.0.appearance.text_color', 'Text color', '#ffffff')}
-        ${this._color('sliders.0.appearance.confirmed_background_color', 'Success background', '#2e7d32')}
-        ${this._color('sliders.0.appearance.confirmed_handle_color', 'Success handle', '#ffffff')}
-        ${this._number('sliders.0.appearance.height', 'Height (px)', 40, 120)}
-        ${this._number('sliders.0.appearance.handle_size', 'Handle size (px)', 32, 100)}
-        ${this._number('sliders.0.appearance.border_radius', 'Corner radius (px)', 0, 60)}
-      </div>
+          ${this._color('sliders.0.appearance.text_color', 'Text color', '#ffffff')}
+          ${this._color('sliders.0.appearance.confirmed_background_color', 'Success background', '#2e7d32')}
+          ${this._color('sliders.0.appearance.confirmed_handle_color', 'Success handle', '#ffffff')}
+          ${this._number('sliders.0.appearance.height', 'Height (px)', 40, 120)}
+          ${this._number('sliders.0.appearance.handle_size', 'Handle size (px)', 32, 100)}
+          ${this._number('sliders.0.appearance.border_radius', 'Corner radius (px)', 0, 60)}
+        </div>
+      </details>
     `;
     }
     constructor(...args){
-        super(...args), this._config = {};
+        super(...args), this._config = {}, this._entityPickerReady = false;
     }
 }
 (0, $24c52f343453d62d$export$29e00dfd3077644b)([
@@ -1812,6 +1831,9 @@ class $d067581fc0d59830$export$70b4c5ffd4aff272 extends (0, $ab210b2da7b39b9d$ex
 (0, $24c52f343453d62d$export$29e00dfd3077644b)([
     (0, $04c21ea1ce1f6057$export$ca000e230c0caa3e)()
 ], $d067581fc0d59830$export$70b4c5ffd4aff272.prototype, "_config", void 0);
+(0, $24c52f343453d62d$export$29e00dfd3077644b)([
+    (0, $04c21ea1ce1f6057$export$ca000e230c0caa3e)()
+], $d067581fc0d59830$export$70b4c5ffd4aff272.prototype, "_entityPickerReady", void 0);
 
 
 customElements.define("slide-confirm-card", (0, $a399cc6bbb0eb26a$export$da0658243c468832));
