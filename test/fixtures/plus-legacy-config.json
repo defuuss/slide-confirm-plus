@@ -1,0 +1,33 @@
+{
+	"type": "custom:slide-confirm-card",
+	"sliders": [
+		{
+			"textUnconfirmed": "Slide to Open/Close",
+			"textConfirmed": "Done!",
+			"iconUnconfirmed": "[[[ return states['switch.entree_haustur_299'].state === 'on' ? 'mdi:door-open' : 'mdi:door-closed'; ]]]",
+			"iconConfirmed": "[[[ return states['switch.entree_haustur_299'].state === 'on' ? 'mdi:door-open' : 'mdi:door-closed'; ]]]",
+			"confirm_action": {
+				"action": "call-service",
+				"service": "switch.toggle",
+				"target": {
+					"entity_id": "switch.entree_haustur_299"
+				}
+			},
+			"appearance": {
+				"background_color": "#0d47a1",
+				"handle_color": "#38bdf8",
+				"handle_style": "3d",
+				"text_color": "#ffffff",
+				"confirmed_background_color": "#047857",
+				"confirmed_handle_color": "#ecfdf5",
+				"height": 68,
+				"handle_size": 58,
+				"border_radius": 34,
+				"background_opacity": 0.18,
+				"handle_position": "left",
+				"confirmed_background_opacity": 0.96
+			},
+			"confirmation_duration": 1800
+		}
+	]
+}
