@@ -1,6 +1,6 @@
 {
 	"name": "slide-confirm-plus",
-	"version": "2.0.0",
+	"version": "2.2.0",
 	"description": "Custom card for Home Assistant to prevent accidental button presses.",
 	"author": "Brian Burton",
 	"license": "MIT",

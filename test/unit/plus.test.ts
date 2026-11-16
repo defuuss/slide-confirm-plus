@@ -8,6 +8,15 @@ const slider = (extra = {}) =>
 	normalizeConfig({ sliders: [{ ...legacy.sliders[0], ...extra }] }).config.sliders[0];
 
 describe("Plus compatibility", () => {
+	it("preserves special own state keys without changing the state map prototype", () => {
+		const s = slider({
+			entity: "input_boolean.test",
+			states: JSON.parse('{"__proto__": {}, "constructor": {}, "off": {}}'),
+		});
+		expect(Object.getPrototypeOf(s.states)).toBeNull();
+		expect(Object.keys(s.states!)).toEqual(["__proto__", "constructor", "off"]);
+		expect(s.states!["__proto__"].confirm_action).toEqual(s.confirm_action);
+	});
 	it("retains the exact legacy appearance, camelCase and target without mutating input", () => {
 		const input = structuredClone(legacy);
 		const s = normalizeConfig(input).config.sliders[0];

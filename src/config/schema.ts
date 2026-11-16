@@ -12,6 +12,24 @@ export type SlideDirection = "ltr" | "rtl";
 
 export const SLIDE_DIRECTIONS: readonly SlideDirection[] = ["ltr", "rtl"];
 
+/** Built-in looks for `theme`. */
+export const THEMES = [
+	"ios",
+	"minimal",
+	"glow",
+	"glass",
+	"tonal",
+	"sunrise",
+	"outline",
+	"soft",
+	"arrows",
+	"mono",
+	"hazard",
+	"aurora",
+] as const;
+
+export type SliderTheme = (typeof THEMES)[number];
+
 /** Keys of the `style:` block. Each maps 1:1 to a `--slide-confirm-*` custom property. */
 export interface StyleConfig {
 	track_color?: string;
@@ -88,6 +106,32 @@ export interface ActionConfig {
 	[extra: string]: unknown;
 }
 
+/**
+ * What a slider shows and does in one entity state. The slider's own options are
+ * the fallback for every key; a `states:` entry overrides them for its state.
+ */
+export interface SliderStateConfig {
+	direction: SlideDirection;
+	text_unconfirmed: string;
+	text_confirmed: string;
+	icon_unconfirmed: string;
+	icon_confirmed: string;
+	confirm_action: ActionConfig;
+	/** The slider's `style` with the entry's own `style` merged over it. */
+	style?: StyleConfig;
+}
+
+/** Keys a `states:` entry may set. */
+export const STATE_KEYS: readonly (keyof SliderStateConfig)[] = [
+	"direction",
+	"text_unconfirmed",
+	"text_confirmed",
+	"icon_unconfirmed",
+	"icon_confirmed",
+	"confirm_action",
+	"style",
+];
+
 /** Normalized slider: defaults applied, legacy keys mapped. */
 export interface SliderConfig {
 	appearance?: AppearanceConfig;
@@ -102,8 +146,17 @@ export interface SliderConfig {
 	direction: SlideDirection;
 	reset_delay: number;
 	haptic: boolean;
+	/** `false` hides the icon / name / label row above the track. Absent means shown. */
+	show_header?: false;
+	/** Built-in look; absent means the classic look. */
+	theme?: SliderTheme;
 	disabled_states?: string[];
 	confirm_action: ActionConfig;
+	/**
+	 * Per-entity-state settings, fully resolved. When present, the slider is
+	 * disabled in any state not listed here.
+	 */
+	states?: Record<string, SliderStateConfig>;
 	style?: StyleConfig;
 }
 
@@ -112,6 +165,7 @@ export interface CardConfig {
 	type: string;
 	header?: string;
 	direction: SlideDirection;
+	theme?: SliderTheme;
 	style?: StyleConfig;
 	sliders: SliderConfig[];
 }
@@ -131,13 +185,28 @@ export interface SliderConfigInput {
 	direction?: SlideDirection;
 	reset_delay?: number;
 	haptic?: boolean;
+	show_header?: boolean;
+	theme?: SliderTheme;
 	disabled_states?: string[];
 	confirm_action?: ActionConfigInput;
+	states?: Record<string, SliderStateInput>;
 	style?: StyleConfig;
 	/** @deprecated v1 */ textUnconfirmed?: string;
 	/** @deprecated v1 */ textConfirmed?: string;
 	/** @deprecated v1 */ iconUnconfirmed?: string;
 	/** @deprecated v1 */ iconConfirmed?: string;
+	[extra: string]: unknown;
+}
+
+/** What a user may write for one `states:` entry. */
+export interface SliderStateInput {
+	direction?: SlideDirection;
+	text_unconfirmed?: string;
+	text_confirmed?: string;
+	icon_unconfirmed?: string;
+	icon_confirmed?: string;
+	confirm_action?: ActionConfigInput;
+	style?: StyleConfig;
 	[extra: string]: unknown;
 }
 
@@ -159,6 +228,7 @@ export interface CardConfigInput {
 	type?: string;
 	header?: string | null;
 	direction?: SlideDirection;
+	theme?: SliderTheme;
 	style?: StyleConfig;
 	sliders?: SliderConfigInput[];
 	[extra: string]: unknown;

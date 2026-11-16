@@ -24,7 +24,7 @@ The original card is intentionally simple and dependable. This fork keeps the sa
 Copy `dist/slide-confirm.js` to `/config/www/slide-confirm-plus/slide-confirm.js`, then add it as a Lovelace JavaScript module resource:
 
 ```yaml
-url: /local/slide-confirm-plus/slide-confirm.js?v=2.0.0
+url: /local/slide-confirm-plus/slide-confirm.js?v=2.2.0
 type: module
 ```
 
@@ -36,7 +36,46 @@ first can silently win. Keep the fork in its own directory, never copy it over t
 official HACS-managed file: an official update would overwrite it. Change the
 `?v=` value after updates, then reload every dashboard browser/app.
 
-## v2.0.0
+## v2.2.0
+
+Integrates official v2.1/v2.2 features while preserving Plus compatibility:
+
+- `states` maps entity states to text, icons, direction, `confirm_action`, and
+  `style` overrides. Each entry inherits the slider defaults; unlisted or missing
+  states disable the control. A state change during a gesture cancels it.
+- `show_header: false` hides the entire slider header, including entity-derived
+  name and icon, and adjusts the card's size estimate.
+- `theme` selects one of twelve built-in looks at card or slider level (see the
+  [option reference](docs/upstream-v2-readme.md)). Use themes without `appearance`
+  for the upstream look; a Plus `appearance` block takes precedence and disables
+  theme decorations, including a theme inherited from the card.
+- Per-state `style` overrides slider style, which overrides Plus appearance.
+  Trusted JavaScript icon templates also work in state entries. Legacy camelCase
+  aliases remain supported at slider level; use snake_case inside `states`.
+- With `reset_delay: 0` and `states`, success persists through unlisted transition
+  states until a listed state is reached, with the existing 30-second safety cap.
+
+```yaml
+type: custom:slide-confirm-card
+sliders:
+  - entity: input_boolean.slide_confirm
+    show_header: false
+    theme: glass
+    states:
+      "off":
+        text_unconfirmed: Slide to enable
+        style:
+          track_color: "#14532d"
+        confirm_action:
+          action: toggle
+      "on":
+        text_unconfirmed: Slide to disable
+        direction: rtl
+        confirm_action:
+          action: toggle
+```
+
+### v2.0 compatibility retained
 
 Based on the official [`v2.0.0`](https://github.com/itsbrianburton/slide-confirm/releases/tag/v2.0.0)
 rewrite (commit `40e81e44297a806a5fca211013bd609d011f957d`): Lit 3, Vite,

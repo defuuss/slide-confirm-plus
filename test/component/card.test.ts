@@ -197,29 +197,38 @@ describe("slide-confirm-card: actions", () => {
 		});
 	});
 
-	it("omits entity from the action config when the slider has none", async () => {
-		const card = await mountCard({
-			sliders: [{ confirm_action: { action: "navigate", navigation_path: "/lovelace/1" } }],
-		});
-		const [slider] = slidersOf(card);
-		const seen: CustomEvent[] = [];
-		const on = (e: Event) => seen.push(e as CustomEvent);
-		document.addEventListener("hass-action", on);
-		try {
-			slider.dispatchEvent(
-				new CustomEvent("slide-confirmed", {
-					detail: { action: slider.config.confirm_action, config: slider.config },
-					bubbles: true,
-					composed: true,
-				}),
-			);
-		} finally {
-			document.removeEventListener("hass-action", on);
-		}
-		expect(seen[0].detail.config).toEqual({
-			tap_action: { action: "navigate", navigation_path: "/lovelace/1" },
-		});
-	});
+	it.each([undefined, ["unavailable"]])(
+		"delegates navigation once without an entity (disabled_states: %j)",
+		async (disabled_states) => {
+			const card = await mountCard({
+				sliders: [
+					{
+						disabled_states,
+						confirm_action: { action: "navigate", navigation_path: "/lovelace/1" },
+					},
+				],
+			});
+			const [slider] = slidersOf(card);
+			const seen: CustomEvent[] = [];
+			const on = (e: Event) => seen.push(e as CustomEvent);
+			document.addEventListener("hass-action", on);
+			try {
+				slider.dispatchEvent(
+					new CustomEvent("slide-confirmed", {
+						detail: { action: slider.config.confirm_action, config: slider.config },
+						bubbles: true,
+						composed: true,
+					}),
+				);
+			} finally {
+				document.removeEventListener("hass-action", on);
+			}
+			expect(seen).toHaveLength(1);
+			expect(seen[0].detail.config).toEqual({
+				tap_action: { action: "navigate", navigation_path: "/lovelace/1" },
+			});
+		},
+	);
 });
 
 describe("slide-confirm-card: sizing", () => {
@@ -241,5 +250,17 @@ describe("slide-confirm-card: sizing", () => {
 		expect(g1.min_columns).toBe(6);
 		expect(g1.rows).toBe(g1.min_rows);
 		expect(g2.rows as number).toBeGreaterThan(g1.rows as number);
+	});
+
+	it("leaves out the heading row for show_header: false", async () => {
+		const sliders = (show_header?: boolean) =>
+			[1, 2, 3, 4].map((n) => ({
+				name: `S${n}`,
+				show_header,
+				confirm_action: { action: "toggle" },
+			}));
+		const shown = await mountCard({ sliders: sliders() });
+		const hidden = await mountCard({ sliders: sliders(false) });
+		expect(hidden.getCardSize()).toBeLessThan(shown.getCardSize());
 	});
 });

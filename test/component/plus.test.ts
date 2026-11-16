@@ -65,6 +65,96 @@ async function mount(extra: Record<string, unknown> = {}) {
 }
 
 describe("Plus real-browser appearance and action safety", () => {
+	const stateOptions = {
+		entity: "switch.entree_haustur_299",
+		show_header: false,
+		theme: "glass",
+		states: {
+			off: {
+				text_unconfirmed: "Open helper",
+				icon_unconfirmed:
+					'[[[ return states["switch.entree_haustur_299"].state === "off" ? "mdi:door-closed" : "mdi:door-open"; ]]]',
+				style: { track_color: "#ff0000" },
+				confirm_action: {
+					action: "perform-action",
+					perform_action: "input_boolean.turn_on",
+					target: { entity_id: "input_boolean.test" },
+				},
+			},
+			on: {
+				direction: "rtl",
+				confirm_action: {
+					action: "perform-action",
+					perform_action: "input_boolean.turn_off",
+					target: { entity_id: "input_boolean.test" },
+				},
+			},
+		},
+	};
+	it("combines per-state actions/styles and trusted icons with legacy appearance and duration", async () => {
+		vi.useFakeTimers();
+		const { slider, root, track, handle, confirm, actions } = await mount(stateOptions);
+		expect(root.querySelector(".header")).toBeNull();
+		expect(track.getBoundingClientRect().height).toBe(68);
+		expect(handle.getBoundingClientRect().left - track.getBoundingClientRect().left).toBe(5);
+		expect(root.style.getPropertyValue("--slide-confirm-track-color")).toBe("#ff0000");
+		expect((handle.querySelector("ha-icon") as unknown as { icon: string }).icon).toBe(
+			"mdi:door-closed",
+		);
+		await confirm();
+		expect(actions).toHaveLength(1);
+		expect(actions[0].detail.config.tap_action.perform_action).toBe("input_boolean.turn_on");
+		vi.advanceTimersByTime(1800);
+		await slider.updateComplete;
+		expect(slider.confirmed).toBe(false);
+	});
+	it.each(["on", "unknown", "toString"])(
+		"rejects pointer completion on synchronous entity change to %s",
+		async (next) => {
+			const { slider, pointer, actions } = await mount(stateOptions);
+			pointer("pointerdown");
+			pointer("pointermove", true);
+			slider.hass = hass(next);
+			pointer("pointerup", true);
+			await slider.updateComplete;
+			expect(actions).toHaveLength(0);
+			expect(slider.progress).toBe(0);
+		},
+	);
+	it("rejects an old child gesture when parent state changes before propagation", async () => {
+		const { card, slider, pointer, actions } = await mount(stateOptions);
+		pointer("pointerdown");
+		pointer("pointermove", true);
+		card.hass = hass("on");
+		pointer("pointerup", true);
+		await slider.updateComplete;
+		expect(actions).toHaveLength(0);
+	});
+	it.each(["pointercancel", "lostpointercapture", "disabled", "disconnected", "config"])(
+		"per-state gesture stays inert after %s",
+		async (reason) => {
+			const { slider, pointer, actions } = await mount(stateOptions);
+			pointer("pointerdown");
+			pointer("pointermove", true);
+			if (reason === "disabled") slider.disabled = true;
+			else if (reason === "disconnected") slider.remove();
+			else if (reason === "config") slider.config = { ...slider.config };
+			else pointer(reason);
+			pointer("pointerup", true);
+			await slider.updateComplete;
+			expect(actions).toHaveLength(0);
+		},
+	);
+	it("drops keyboard progress across a state change before Lit updates", async () => {
+		const { slider, handle, actions } = await mount(stateOptions);
+		for (let i = 0; i < 9; i++)
+			handle.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+		slider.hass = hass("on");
+		handle.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowLeft" }));
+		await slider.updateComplete;
+		expect(actions).toHaveLength(0);
+		expect(slider.progress).toBeLessThan(0.2);
+	});
 	it("renders exact installed appearance and equal 5px inset without fading text/handle", async () => {
 		const { root, track, handle } = await mount();
 		expect(track.getBoundingClientRect().height).toBe(68);
