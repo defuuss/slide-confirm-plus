@@ -75,10 +75,11 @@ export class SlideConfirmCard extends LitElement {
 		let h = EST.cardPadding + (c.header ? EST.cardHeader : 0);
 		c.sliders.forEach((s, i) => {
 			const hasHeader =
-				s.name !== undefined ||
-				s.icon !== undefined ||
-				s.label !== undefined ||
-				s.entity !== undefined;
+				s.show_header !== false &&
+				(s.name !== undefined ||
+					s.icon !== undefined ||
+					s.label !== undefined ||
+					s.entity !== undefined);
 			h +=
 				(s.appearance?.height ?? EST.sliderTrack) +
 				(hasHeader ? EST.sliderHeader : 0) +
@@ -137,7 +138,16 @@ export class SlideConfirmCard extends LitElement {
 		const { action, config } = e.detail;
 		// setConfig is synchronous but Lit renders later: reject an old child gesture
 		// in that gap rather than executing an action for a removed/replaced slider.
-		if (!this._config?.sliders.includes(config) || action !== config.confirm_action) return;
+		if (!this.isConnected || !this._config?.sliders.includes(config)) return;
+		const current = config.entity ? this.hass?.states[config.entity]?.state : undefined;
+		if (config.entity && config.disabled_states?.includes(current ?? "unavailable")) return;
+		if (config.states && e.detail.state !== current) return;
+		const expected = config.states
+			? current !== undefined && Object.prototype.hasOwnProperty.call(config.states, current)
+				? config.states[current].confirm_action
+				: undefined
+			: config.confirm_action;
+		if (action !== expected) return;
 		const actionConfig: Record<string, unknown> = { tap_action: action };
 		if (config.entity) actionConfig.entity = config.entity;
 		// Same event the built-in cards fire; HA's action-mixin runs handleAction on it.

@@ -4,7 +4,20 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses
 [Semantic Versioning](https://semver.org/).
 
-## [Unreleased] – Plus 2.0.0
+## [Unreleased] – Plus 2.2.0
+
+### Upstream v2.1/v2.2 integration
+
+- Integrate feature commits `411b67c` and `75d3fe3`: per-state text, icons,
+  direction, actions and style overrides; twelve themes; `show_header` and editor
+  controls. Keep the fork's identity and omit upstream Pages/demo automation.
+- Preserve legacy appearance, trusted icon JavaScript, camelCase aliases and
+  millisecond duration. An appearance block takes precedence over themes.
+- Cancel state-changing gestures even before Lit renders; validate the current
+  state/action at the card boundary and reject inherited state-map keys.
+- Extend unit/browser regression coverage and regenerate the distributable bundle.
+
+## Plus 2.0.0
 
 ### Plus compatibility and safety
 

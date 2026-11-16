@@ -210,6 +210,57 @@ describe("slide-confirm-card-editor: slider list", () => {
 });
 
 describe("slide-confirm-card-editor: form changes", () => {
+	for (const [label, states] of [
+		["mixed entries", { off: {}, on: { text_unconfirmed: "Turn off" } }],
+		["all-empty entries", { off: {}, on: {} }],
+		["empty map", {}],
+		["own special keys", JSON.parse('{"off":{},"__proto__":{},"constructor":{}}')],
+	] as const) {
+		for (const edit of ["title", "slider"] as const) {
+			it(`preserves ${label} through a ${edit} edit and round-trip`, async () => {
+				const original = clone(states);
+				const { editor, cardForm, sliderForms, formChange, last, sr } = await mount({
+					sliders: [
+						{
+							entity: "switch.test",
+							confirm_action: { action: "toggle", data: {} },
+							states,
+						},
+					],
+				});
+				if (edit === "title") {
+					await formChange(cardForm(), { header: "Changed title", style: {} });
+					expect(last().header).toBe("Changed title");
+					expect(last()).not.toHaveProperty("style");
+				} else {
+					await formChange(sliderForms()[0], {
+						...sliderForms()[0].data,
+						name: "Changed slider",
+						style: {},
+					});
+					expect(last().sliders![0].name).toBe("Changed slider");
+					expect(last().sliders![0]).not.toHaveProperty("style");
+				}
+				const saved = JSON.parse(JSON.stringify(last()));
+				expect(saved.sliders[0].states).toEqual(original);
+				expect(Object.keys(saved.sliders[0].states)).toEqual(Object.keys(original));
+				expect(last().sliders![0].confirm_action).not.toHaveProperty("data");
+				expect(states).toEqual(original);
+				editor.setConfig(saved);
+				await editor.updateComplete;
+				expect(sliderForms()[0].data.states).toEqual(original);
+				if (label === "empty map") {
+					// An invalid empty restriction must stay invalid, not become an unrestricted action.
+					expect(sr.querySelector("ha-alert.error")?.textContent).toContain(
+						"states must map entity states to options",
+					);
+				} else {
+					expect(sr.querySelector("ha-alert.error")).toBeNull();
+				}
+			});
+		}
+	}
+
 	it("commits a slider edit cleaned of empties, migrating only that slider", async () => {
 		const { sliderForms, formChange, last } = await mount(clone(v1Readme));
 		const form = sliderForms()[0];
